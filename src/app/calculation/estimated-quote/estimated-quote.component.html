@@ -1,0 +1,45 @@
+<div class="header-img">
+  <div class="text">Estimated Quote</div>
+  <img src="../../../assets/img/calc-back.png" alt="back">
+</div>
+
+<div class="estimated">
+  <div *ngIf="calculatedData" class="estimated-top">
+    <form class="estimated__date">
+      <span>Starting Date: </span>
+      <input class="estimated__date__input" placeholder="yyyy-mm-dd" name="dp" (ngModelChange)="dateChange($event)"
+        [(ngModel)]="model" [markDisabled]="isDisabled" ngbDatepicker #d="ngbDatepicker" required>
+      <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">
+        <img src="../../../assets/img/calendar.png" alt="">
+      </button>
+    </form>
+    <div class="estimated__length">
+      Project length: <b>{{ projectLength }}</b> days.
+    </div>
+  </div>
+  <ngx-spinner [name]="loadingSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+  <table *ngIf="calculatedData" class="estimated__table">
+    <tr *ngFor="let prices of calculatedData.categoryPrices">
+      <td class="estimated__table__description">{{ prices.categoryName }}</td>
+      <td class="estimated__table__price">${{ prices.price | number : '1.0-2' }}</td>
+    </tr>
+    <tr>
+      <td class="estimated__table__description">Total</td>
+      <td class="estimated__table__price total">${{ calculatedData.totalPrice | number : '1.0-2' }}</td>
+    </tr>
+    <tr>
+      <td class="estimated__table__description">Tax</td>
+      <td class="estimated__table__price tax">${{ calculatedData.tax | number : '1.0-2' }}</td>
+    </tr>
+    <tr>
+      <td class="estimated__table__description">Total + tax</td>
+      <td class="estimated__table__price totaltax">${{ calculatedData.totalAndTax | number : '1.0-2' }}</td>
+    </tr>
+  </table>
+  <div class="estimated__submit">
+    <div class="date-required" *ngIf="showRequired">Starting Date Required</div>
+    <button (click)="onSubmit()" *ngIf="isLoggedIn">Continue</button>
+    <button (click)="onSubmit()" *ngIf="!isLoggedIn">Login or Register</button>
+  </div>
+</div>
+<ngx-spinner [name]="submitSpinner" bdColor = "rgba(249,249,249,1)" size = "large" color = "rgba(0,0,0,0.6)" type = "square-loader" [fullScreen] = "true"><p > Loading... </p></ngx-spinner>

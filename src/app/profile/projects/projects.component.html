@@ -1,0 +1,38 @@
+<div class="projects">
+
+  <div *ngIf="noData" class="no-projects">
+    <img src="../../../assets/img/no-project.png" alt="no-project">
+    <span>No Projects Found...</span>
+  </div>
+
+  <div class="card" *ngFor="let project of projects" (click)="openProject(project.id)">
+    <div class="card__body">
+      <div class="card-top">
+        <div class="card__title">#{{ project.projectNumber }}</div>
+        <div class="card__subtitle">Estimated project length: {{ project.projectLength }} days</div>
+        <div class="card__subtitle" [ngStyle]="{'color':getColor(project.statusId)}">{{ project.statusName }}</div>
+      </div>
+      <div class="card__info">
+        <div>
+          <span class="card__info__main">Location: </span>
+          <span class="card__info__content">{{ project.city.name }}, {{ project.city.stateCode }}</span>
+        </div>
+        <div>
+          <span class="card__info__main">Address: </span>
+          <span class="card__info__content">{{ project.address }}</span>
+        </div>
+        <div>
+          <span class="card__info__main">Time Frame: </span>
+          <span class="card__info__content">
+            {{ project.startingDate | date:'mediumDate' }} -
+            {{ getProjectEndDate(project.startingDate, project.projectLength) | date:'mediumDate' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-spinner projects-spinner">
+  <ngx-spinner [name]="loadingSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+</div>

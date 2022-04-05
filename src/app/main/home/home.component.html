@@ -1,0 +1,118 @@
+<ngx-spinner [name]="creatingProjectSpinner" bdColor = "rgba(249,249,249,1)" size = "large" color = "rgba(0,0,0,0.6)" type = "square-loader" [fullScreen] = "true"><p > Loading... </p></ngx-spinner>
+
+<div class="slider">
+  <div class="slider__swipper">
+    <swiper [config]="config">
+      <ng-template swiperSlide>
+        <img src="../../../assets/img/home-page/kitchen-slider.webp" alt="kitchen-slider">
+      </ng-template>
+      <ng-template swiperSlide>
+        <img src="../../../assets/img/home-page/livingroom-slider.webp" alt="livingroom-slider">
+      </ng-template>
+      <ng-template swiperSlide>
+        <img src="../../../assets/img/home-page/bedroom-slider.webp" alt="bedroom-slider">
+      </ng-template>
+    </swiper>
+  </div>
+</div>
+
+<!-- Home Page Heading -->
+<div class="home-page-heading">
+  <h1 class="home-page-heading__head">Welcome to Our Place</h1>
+  <div class="home-page-heading__border"></div>
+  <p class="home-page-heading__info">SUPER DEAL SERVICE</p>
+</div>
+
+<!-- Apartment Card Button -->
+<div class="apartment-button" *ngIf="role != 'leader' && role != 'worker'">
+  <button class="shop-now" routerLink="/calculation">Calculate Now</button>
+</div>
+
+<!-- Apartment Cards -->
+<swiper [config]="configCards" class="apartment-cards">
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/table-card.webp" alt="kitchen-card">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/livingroom-card.webp" alt="livingroom-card">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/bedroom-card.webp" alt="bedroom-card">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/bathroom.webp" alt="bathroom">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/foyer.webp" alt="foyer">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/kitchen.webp" alt="kitchen">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/livingroom-card-2.webp" alt="livingroom-card-2">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/lounge.webp" alt="lounge">
+  </ng-template>
+  <ng-template swiperSlide>
+    <img class="card-img-top" src="../../../assets/img/home-page/bedroom-card-2.webp" alt="bedroom-card-2">
+  </ng-template>
+</swiper>
+
+
+<!-- Bottom Page -->
+<div class="bottom-page">
+
+  <!-- ArtBoard -->
+  <div class="artboard">
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="all-info">
+        <div class="info">
+          <div class="info__header">
+            <img src="../../../assets/img/contact-icons/placeholder.png" alt="placeholder">
+            <div>Address</div>
+          </div>
+          <div class="info__text">
+            330 East 49th St, <br>
+            New York, NY, 10017
+          </div>
+        </div>
+        <div class="info">
+          <div class="info__header">
+            <img src="../../../assets/img/contact-icons/phone.png" alt="phone">
+            <div>Phone</div>
+          </div>
+          <div class="info__text">
+            +1 (929) 527-5449 <br>
+            +1 (718) 200-7221
+          </div>
+        </div>
+
+        <div class="info">
+          <div class="info__header">
+            <img src="../../../assets/img/contact-icons/email.png" alt="email">
+            <div>Email</div>
+          </div>
+          <div class="info__text">
+            info@copalany.com
+          </div>
+        </div>
+
+      </div>
+      <div class="pages">
+        <div>
+          <button routerLink="/about-us" class="pages__button">ABOUT US</button>
+        </div>
+
+        <div>
+          <button routerLink="/contact-us" class="pages__button">CONTACT</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>

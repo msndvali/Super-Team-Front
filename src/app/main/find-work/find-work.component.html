@@ -1,0 +1,83 @@
+<div class="find-work">
+
+  <div class="find-work__head">
+    <div class="find-work__head__header">Find work near you</div>
+    <div class="find-work__head__button">
+      <button class="advanced-search" (click)="acc.toggle('advanced-search')">Advanced Search</button>
+    </div>
+  </div>
+
+  <div class="find-work__search">
+    <ngb-accordion #acc="ngbAccordion">
+      <ngb-panel id="advanced-search" title="First panel">
+        <ng-template ngbPanelContent>
+          <form [formGroup]="findWorkSearchForm">
+            <div class="find-work__search__main">
+              <img src="../../../../assets/img/loupe.png" alt="loupe">
+              <input type="text" formControlName="term" placeholder="Search...">
+            </div>
+            <div class="form-inline">
+              <div class="form-group">
+                <label class="find-work__search__label">City</label>
+                <input type="text" formControlName="city" class="find-work__search__input" placeholder="City Name...">
+              </div>
+              <div class="form-group">
+                <label class="find-work__search__label">Start Date</label>
+                <input type="date" formControlName="startDate" class="find-work__search__input">
+              </div>
+            </div>
+          </form>
+          <div class="find-work__search__button">
+            <button (click)="getProjects('search')">Search</button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </div>
+
+  <div *ngIf="noData" class="no-projects">
+    <img src="../../../assets/img/no-project.png" alt="no-project">
+    <span>No Projects Found...</span>
+  </div>
+
+  <div class="find-work__content">
+    <div *ngFor="let project of projects" class="card" (click)="redirectToScopeOfWork(project.id)">
+      <div class="card__body">
+        <div class="card-top">
+          <div>
+            <div class="card__title">#{{ project.projectNumber }}</div>
+            <div class="card__subtitle">Estimated project length: {{ project.projectLength }} days</div>
+          </div>
+        </div>
+        <div class="card__info">
+          <div>
+            <span class="card__info__main">Location: </span>
+            <span class="card__info__content">{{ project.city.name }}, {{ project.city.stateCode }}</span>
+          </div>
+          <div>
+            <span class="card__info__main">Address: </span>
+            <span class="card__info__content">{{ project.address }}</span>
+          </div>
+          <div>
+            <span class="card__info__main">Time Frame: </span>
+            <span class="card__info__content">
+              {{ project.startingDate | date:'mediumDate' }} -
+              {{ getProjectEndDate(project.startingDate, project.projectLength) | date:'mediumDate' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="loading-spinner">
+    <ngx-spinner [name]="loadingSpinner" bdColor="rgba(249, 249, 249, 0.8)" size="medium" color="#ebc858s"
+      type="ball-pulse-sync" [fullScreen]="false"></ngx-spinner>
+  </div>
+
+  <div class="pagination">
+    <button type="button" (click)="getProjects('load-more')" *ngIf="viewMore">View More</button>
+    <div type="button" class="no-data" *ngIf="noMoreData">No More Data...</div>
+  </div>
+</div>

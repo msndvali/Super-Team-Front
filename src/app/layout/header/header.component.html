@@ -1,0 +1,67 @@
+<!-- Website Navbar -->
+<nav class="nav" [ngClass]="{'navbar-scrolled': isScrolled}">
+  <div class="container-header">
+    <!-- Website Brand -->
+    <div class="nav__brand" routerLink="/home">
+      Super Team
+    </div>
+    <!-- Website Routing -->
+    <div class="nav__routing" [class.active]="isHamburgerActive" [ngClass]="{'routing-scrolled': isScrolled}">
+      <button class="nav-item" routerLink="/home" routerLinkActive="active">HOME PAGE</button>
+      <button class="nav-item" routerLink="/about-us" routerLinkActive="active">ABOUT US</button>
+      <button class="nav-item" routerLink="/contact-us" routerLinkActive="active">CONTACT</button>
+      <button
+        class="nav-item"
+        routerLink="/find-work"
+        routerLinkActive="active"
+        *ngIf="loginDisplay && role == 'leader' && isVerified"
+      >
+        FIND WORK
+      </button>
+      <button class="nav-item" *ngIf="loginDisplay" routerLink="/profile" routerLinkActive="active">MY PROJECTS</button>
+    </div>
+    <!-- Website Auth -->
+    <div class="nav__auth">
+      <div class="notification" routerLink="/notification" *ngIf="loginDisplay">
+        <img src="../../../assets/img/notification.png" alt="notification">
+        <div *ngIf="notificationCount > 0" class="ding-dong">
+          <span>{{ notificationCount }}</span>
+        </div>
+      </div>
+      <!-- Login or register -->
+      <button class="login" (click)="login()" *ngIf="!loginDisplay">Sign in or Sign up</button>
+      <button class="organization" (click)="signUp()" *ngIf="!loginDisplay">Register as <br> Subcontractor</button>
+      <!-- Mobile Login or register -->
+      <div class="mobile-login-register" *ngIf="!loginDisplay">
+        <div ngbDropdown placement="bottom-right">
+          <div class="add-user" id="dropdown-mobile" ngbDropdownToggle>
+            <button>
+              <img src="../../../assets/img/add-user.png" alt="mobile-login-register">
+            </button>
+          </div>
+          <div ngbDropdownMenu aria-labelledby="dropdown-mobile">
+            <button ngbDropdownItem class="mobile-login" (click)="login()" *ngIf="!loginDisplay">Sign in or Sign up</button>
+            <button ngbDropdownItem class="mobile-organization" (click)="signUp()" *ngIf="!loginDisplay">Register as Subcontractor</button>
+          </div>
+        </div>
+      </div>
+      <!-- Profile & Users -->
+      <div ngbDropdown class="d-inline-block float_right" placement="bottom-right" *ngIf="loginDisplay">
+        <div class="nav-user" id="navdropdown" ngbDropdownToggle>
+          <button>
+            <img src="https://superteam.blob.core.windows.net/images/{{this.userId}}" onError="this.src='../../assets/img/profile/man.png'" alt="header-profile-img">
+          </button>
+        </div>
+        <div ngbDropdownMenu aria-labelledby="navdropdown">
+          <button ngbDropdownItem *ngIf="loginDisplay && role == 'leader' && isVerified" routerLink="/add-users">Users</button>
+          <button ngbDropdownItem *ngIf="loginDisplay" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+    <div class="hamburger" [class.active]="isHamburgerActive" (click)="hamburgerActive()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+  </div>
+</nav>

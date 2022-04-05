@@ -1,0 +1,45 @@
+<div class="notification">
+  <div class="notification__header">
+    Notifications
+  </div>
+
+  <div *ngIf="newNotificationExists">
+    <div class="notification__subheader">
+      Unread Notifications
+    </div>
+    <div class="notification__card">
+      <div class="notification__content" *ngFor="let notes of notifications">
+        <div class="just-row" *ngIf="notes.isRead == 0">
+          <div class="notification__content__icon">
+            <img src="../../../assets/img/message.png" alt="message">
+          </div>
+          <div>
+            <div class="notification__content__header" innerHtml="{{ notes.message }}"></div>
+            <div class="notification__content__date">
+              {{ notes.date | date:'mediumDate' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notification__subheader">
+    Previous Notifications
+  </div>
+  <div class="notification__card">
+    <div class="notification__content" *ngFor="let notes of notifications">
+      <div class="just-row" *ngIf="notes.isRead == 1">
+        <div class="notification__content__icon">
+          <img src="../../../assets/img/message.png" alt="message">
+        </div>
+        <div>
+          <div class="notification__content__header" innerHtml="{{ notes.message }}"></div>
+          <div class="notification__content__date">
+            {{ notes.date | date:'mediumDate' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

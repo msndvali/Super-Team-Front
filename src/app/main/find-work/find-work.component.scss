@@ -1,0 +1,251 @@
+@import 'variables';
+@import 'mixins';
+
+.loading-spinner {
+  position: relative;
+}
+
+.no-projects {
+  margin-top: 25px;
+
+  img {
+    width: 8%;
+  }
+
+  span {
+    font-size: 18px;
+  }
+}
+
+.find-work {
+  margin-top: 150px;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 2% !important;
+    margin-bottom: 10px !important;
+
+    &__header {
+      font-size: 24px;
+      color: $greyColor;
+    }
+
+    &__button {
+      .advanced-search {
+        margin-top: 10px;
+        background-color: transparent;
+        border: none;
+        color: $blackColor;
+        font-size: 16px;
+        font-weight: 400;
+        transition: color 0.3s ease-out;
+
+        &::after {
+          padding: 2px 0px;
+          content: '';
+          display: block;
+          border-bottom: 2px solid $blackColor;
+          width: 0;
+          -webkit-transition: 0.3s ease;
+          transition: 0.3s ease;
+        }
+
+        &:hover {
+          color: $blackColor;
+        }
+
+        &:hover::after {
+          width: 100%;
+        }
+
+        &.active {
+          color: $blackColor;
+        }
+
+        &.active::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  &__search {
+    width: 100%;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgb(0, 0, 0, 0.14), 0px 1px 3px 0px rgb(0, 0, 0, 0.12);
+    border-radius: 4px;
+    background-color: #fff;
+    margin-right: 2% !important;
+    margin-bottom: 10px !important;
+
+    &__main {
+      width: 100%;
+
+      img {
+        position: absolute;
+        width: 45px;
+        padding: 12px 10px 10px 10px;
+        text-align: center;
+      }
+
+      input {
+        @include input;
+        width: 100%;
+        padding-left: 50px;
+        margin-bottom: 5px;
+        margin-bottom: 15px;
+      }
+    }
+
+    .form-inline {
+      display: flex;
+
+      .form-group:first-child {
+        margin-right: 15px;
+      }
+
+      .form-group:nth-child(2) {
+        margin-left: 15px;
+      }
+    }
+
+    .form-group {
+      width: 100%;
+    }
+
+    &__label {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-weight: 400;
+      font-size: 16px;
+      color: $greyColor;
+    }
+
+    &__input {
+      @include input;
+    }
+
+    &__button {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+
+      button {
+        @include orange-button-smaller;
+      }
+    }
+  }
+
+  &__content {
+
+    .card {
+      cursor: pointer;
+      border: 1px solid #ebedf3;
+      background-color: #fff;
+      background-image: url("../../../assets/img/pending.png");
+      background-size: 140px 140px;
+      background-repeat: no-repeat;
+      background-position: 97%;
+      transition: all .5s;
+
+      &__body {
+        padding: 1.75rem 2rem;
+      }
+
+      .card-top {
+        display: flex;
+      }
+
+      &__title {
+        font-size: 16px;
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: #9c9c9c;
+      }
+
+      &__subtitle {
+        font-size: 12px;
+        font-weight: 400;
+        color: #adadad;
+      }
+
+      &__info {
+        margin-top: 15px;
+
+        span {
+          margin-top: 5px;
+        }
+
+        &__main {
+          font-size: 14px;
+          font-weight: bold;
+        }
+
+        &__content {
+          font-size: 14px;
+          color: $greyColor;
+        }
+      }
+
+      &__text {
+        margin-top: 15px;
+        font-size: 14px;
+        font-weight: 400;
+        color: $greyColor;
+      }
+
+      &:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.05);
+      }
+    }
+
+  }
+
+  .pagination {
+    width: 100%;
+    margin-bottom: 30px;
+
+    button {
+      @include orange-button;
+      margin: auto;
+    }
+
+    .no-data {
+      margin: auto;
+      font-weight: bold;
+    }
+  }
+}
+
+
+
+::ng-deep .accordion .card {
+  margin-right: 2% !important;
+  border: none;
+}
+
+::ng-deep .card-header {
+  display: none;
+}
+
+::ng-deep .ngx-spinner-overlay {
+  margin-top: 100px;
+}
+
+///// Responsive /////
+@media only screen and (min-width: 1280px) {
+  .card {
+    @include grid(3, 2%);
+  }
+}
+@media only screen and (max-width: 1280px) {
+  .card {
+    @include grid(2, 2%);
+  }
+}
+@media only screen and (max-width: 768px) {
+  .card {
+    @include grid(1, 2%);
+  }
+}

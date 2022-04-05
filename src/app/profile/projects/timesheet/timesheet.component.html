@@ -1,0 +1,78 @@
+<div class="timesheet">
+  <div class="timesheet__back">
+    <img src="../../../../assets/img/fast-forward.png" alt="back-to-project">
+    <span (click)="goBackToProject(projectId)">Back</span>
+  </div>
+  <div class="timesheet__project">
+    <div class="name">
+      #{{ project.projectNumber }}
+    </div>
+    <div class="timesheet__project__inline">
+      <div class="address">
+        Address: {{ project.address }}
+      </div>
+      <div class="total-area">
+        Total Area: {{ totalArea }} sqft
+      </div>
+    </div>
+  </div>
+  <form [formGroup]="timesheetSearchForm" class="timesheet__search">
+    <div class="form-group">
+      <label class="timesheet__search__label">Date From</label>
+      <input type="date" formControlName="dateFrom" class="timesheet__search__input datepicker" placeholder="from">
+    </div>
+    <div class="form-group">
+      <label class="timesheet__search__label">Date To</label>
+      <input type="date" formControlName="dateTo" class="timesheet__search__input datepicker" placeholder="to">
+    </div>
+    <div class="form-group" *ngIf="role == 'leader'">
+      <label class="timesheet__search__label">Select User</label>
+      <ng-select
+        [items]="usersList"
+        bindLabel="name"
+        bindValue="id"
+        labelForId="users"
+        [multiple]="false"
+        clearAllText="Clear"
+        formControlName="userId">
+      </ng-select>
+    </div>
+    <div class="timesheet__search__button">
+      <label class="timesheet__search__label dot">.</label>
+      <button class="search" (click)="getTimesheet(timesheetSearchForm, 'search')">Search</button>
+    </div>
+  </form>
+  <table class="timesheet__table">
+    <ngx-spinner [name]="timesheetSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+    <colgroup>
+      <col span="1" style="width: 25%;">
+      <col span="1" style="width: 15%;">
+      <col span="1" style="width: 15%;">
+      <col span="1" style="width: 15%;">
+      <col span="1" style="width: 15%;">
+      <col span="1" style="width: 15%;">
+   </colgroup>
+    <tr class="timesheet__table__thead">
+      <th><span>Worker Name <img src="../../../../assets/img/sort-arrow.png" alt="sort-arrow"></span></th>
+      <th><span>Date <img src="../../../../assets/img/sort-arrow.png" alt="sort-arrow"></span></th>
+      <th><span>Start <img src="../../../../assets/img/sort-arrow.png" alt="sort-arrow"></span></th>
+      <th><span>Finish <img src="../../../../assets/img/sort-arrow.png" alt="sort-arrow"></span></th>
+      <th><span>Idle - minutes <img src="../../../../assets/img/sort-arrow.png" alt="sort-arrow"></span></th>
+      <th><span>Total - hours <img src="../../../../assets/img/sort-arrow.png" alt="sort-arrow"></span></th>
+    </tr>
+    <tr *ngFor="let timesheet of timesheetList">
+      <th>{{ timesheet.workerName }}</th>
+      <th>{{ timesheet.startTime | date:'M/d/yyyy'}}</th>
+      <th>{{ timesheet.startTime | date:'shortTime' }}</th>
+      <th>{{ timesheet.endTime | date:'shortTime' }}</th>
+      <th *ngIf="timesheet.hoursWorked < 10">0 min</th>
+      <th *ngIf="timesheet.hoursWorked > 10 && timesheet.hoursWorked < 12">30 min</th>
+      <th *ngIf="timesheet.hoursWorked > 12">60 min</th>
+      <th>{{ timesheet.hoursWorked }} hours</th>
+    </tr>
+  </table>
+  <div class="load-more">
+    <button type="button" (click)="getTimesheet(timesheetSearchForm, 'load-more')" *ngIf="viewMore">View More</button>
+    <div type="button" class="no-data" *ngIf="noMoreData">No More Data...</div>
+  </div>
+</div>

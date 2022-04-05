@@ -1,0 +1,261 @@
+@import 'variables';
+@import 'mixins';
+
+.status {
+  margin-top: 150px;
+  margin-bottom: 50px;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px !important;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      color: $greyColor;
+    }
+
+    &__button {
+      button {
+        @include orange-button;
+      }
+    }
+  }
+
+  &__table {
+    position: relative;
+    width: 100%;
+    margin-top: 25px;
+    box-shadow: 15px 15px 15px 0px #0000001f;
+
+    tr:nth-child(odd) {
+      background: #f3f3f3;
+    }
+
+    tr:nth-child(even) {
+      background: #fff;
+    }
+
+    &__thead {
+      background-color: #f3f3f3 !important;
+
+      th {
+        padding: 10px;
+        font-weight: bold !important;
+      }
+    }
+
+    tr th {
+      padding: 10px;
+      font-size: 14px;
+      font-weight: normal;
+      text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #cfcfcf;
+
+      &:last-child {
+        width: 10%;
+        text-align: center;
+      }
+    }
+
+    .update-delete {
+
+      button {
+        border: none;
+        background: transparent;
+
+        img {
+          cursor: pointer;
+          width: 22px;
+        }
+
+        &:nth-child(2) {
+          margin-left: 20px;
+        }
+      }
+    }
+
+    .bottom {
+
+      th {
+        border: none !important;
+
+        span {
+          font-weight: bold;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .add-users .modal-content {
+  min-width: 650px;
+  border-radius: 8px;
+}
+
+::ng-deep .modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  border: none;
+
+  .modal-title {
+    font-size: 20px;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+
+    span {
+      font-size: 22px;
+      color: $greyColor;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+
+  .modal__form {
+
+    .form-inline {
+      display: flex;
+      flex-direction: row;
+      // flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .form-group {
+      width: 100%;
+      margin-bottom: 35px;
+
+      .help-block {
+        font-size: 14px;
+        color: $bootstrapDanger;
+      }
+    }
+
+    &__label {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-weight: 400;
+      font-size: 14px;
+      color: $greyColor;
+    }
+
+    &__input {
+      @include input;
+    }
+  }
+
+  .show-password {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+  }
+
+  .password__contains {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    &__body {
+      border: 2px solid #ffbebc;
+      background-color: #fff3f2;
+      padding: 16px 24px 16px 18px;
+    }
+
+    &__header {
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      color: $bootstrapDanger;
+    }
+
+    &__list {
+      margin-bottom: 0;
+
+      li {
+        font-size: 14px;
+
+      }
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border: none;
+  justify-content: center;
+
+  .modal-cancel {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: $greyColor;
+  }
+
+  .modal-save {
+    background-color: #93c9ba;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #7db8a7;
+    }
+  }
+}
+
+::ng-deep .ng-select-container {
+  height: 48px !important;
+}
+
+@media only screen and (max-width: 600px) {
+  table tr th {
+    padding: 4px !important;
+    font-size: 12px !important;
+  }
+}
+
+::ng-deep .add-users .modal-content {
+  @media  only screen and (max-width: 922px) {
+    min-width: 555px !important;
+  }
+}
+::ng-deep .add-users .modal-content {
+  @media  only screen and (max-width: 768px) {
+    .form-inline {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+  }
+}
+::ng-deep .add-users .modal-content {
+  @media  only screen and (max-width: 585px) {
+    min-width: 525px !important;
+  }
+}
+::ng-deep .add-users .modal-content {
+  @media  only screen and (max-width: 515px) {
+    min-width: 405px !important;
+  }
+}
+::ng-deep .add-users .modal-content {
+  @media  only screen and (max-width: 415px) {
+    min-width: 300px !important;
+  }
+}
+
+

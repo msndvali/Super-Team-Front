@@ -1,0 +1,330 @@
+@import 'variables';
+@import 'mixins';
+
+.profile {
+  margin-top: 150px;
+
+  &-flex {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 35px;
+  }
+
+  &__info {
+    display: flex;
+
+    &__image {
+      position: relative;
+
+      .profile-image {
+        width: 100px;
+        height: 100px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 50%;
+
+        img {
+          pointer-events: none;
+          display: inline;
+          margin: 0 auto;
+          height: 100%;
+          width: auto;
+        }
+      }
+
+      .choose {
+        position: absolute;
+        top: 0;
+
+        button {
+          background-color: #fff;
+          border: 2px solid #cbcbcb;
+          border-radius: 25px;
+          padding: 2px 7px 4px;
+
+          img {
+            width: 16px;
+          }
+        }
+
+      }
+    }
+
+    &__content {
+      margin-left: 20px;
+
+      .inline-top {
+        display: flex;
+
+        .name {
+          font-size: 20px;
+          font-weight: bold;
+          letter-spacing: 1px;
+
+          .leader-organization {
+            font-size: 18px;
+            font-weight: normal;
+          }
+        }
+
+        .email {
+          display: flex;
+
+          img {
+            width: 16px;
+            padding-bottom: 2px;
+          }
+
+          span {
+            margin-left: 6px;
+            font-size: 16px;
+            color: #6a6a6a;
+          }
+        }
+
+        .unverified {
+
+          button {
+            margin-top: 4px;
+            margin-left: 28px;
+            background-color: #d9544f42;
+            color: $bootstrapDanger;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            transition: all 0.2s ease-in-out;
+
+            &:hover {
+              background-color: #d9544f81;
+            }
+          }
+        }
+
+        .verified {
+          margin-left: 8px;
+        }
+      }
+
+      .inline-bottom {
+        display: flex;
+        margin-top: 20px;
+
+        .postal-code {
+          display: flex;
+
+          img {
+            width: 16px;
+            padding-bottom: 2px;
+          }
+
+          span {
+            margin-left: 6px;
+            font-size: 16px;
+            color: #6a6a6a;
+          }
+        }
+
+        .role {
+          display: flex;
+          margin-left: 20px;
+
+          img {
+            width: 16px;
+            padding-bottom: 2px;
+          }
+
+          span {
+            margin-left: 6px;
+            font-size: 16px;
+            color: #6a6a6a;
+          }
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .choose-image .modal-content {
+  min-width: 555px;
+  border-radius: 8px;
+}
+
+::ng-deep .modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  border: none;
+
+  .modal-title {
+    font-size: 20px;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+
+    span {
+      font-size: 22px;
+      color: $greyColor;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-footer.profile-footer {
+  justify-content: space-between !important;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border: none;
+  justify-content: center;
+
+  .modal-cancel {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: $greyColor;
+  }
+
+  .modal-save {
+    background-color: #93c9ba;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #7db8a7;
+    }
+  }
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-img-upload {
+  cursor: pointer;
+  display: inline-block;
+  background-color: $orangeColor;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  padding: 12px 30px;
+  transition: 0.25s ease-in-out;
+
+  &:hover {
+    background-color: $orangeColorDarker;
+  }
+}
+
+.image-cropper {
+  width: 250px;
+  height: 250px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.profile-pic {
+  pointer-events: none;
+  display: inline;
+  margin: 0 auto;
+  height: 100%;
+  width: auto;
+}
+
+.custom-file-upload {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: $orangeColor;
+  border: none;
+  width: 145px;
+  height: 75px;
+  margin-left: 4px;
+  margin-right: 4px;
+  text-align: center;
+  transition: 0.25s ease-in-out;
+
+  span {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+
+  &:hover {
+    background-color: $orangeColorDarker;
+  }
+
+}
+
+.save-profile-img {
+
+  button {
+    @include black-button-smaller;
+  }
+}
+
+::ng-deep .custom-file-upload .ngx-spinner-overlay {
+  margin-top: 0 !important;
+}
+
+::ng-deep .choose-image .modal-content {
+  @media  only screen and (max-width: 540px) {
+    min-width: 333px !important;
+  }
+}
+
+.modal-body.check {
+  padding-bottom: 0 !important;
+}
+
+.modal-footer.check {
+  height: 40px !important;
+  padding: 0 !important;
+}
+
+.check-footer {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+
+  .check {
+
+    img {
+      width: 28px;
+    }
+  }
+}
+
+.verify-view {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+
+  .pdf {
+    cursor: pointer;
+    text-decoration: none;
+    @include black-button-smaller;
+  }
+}

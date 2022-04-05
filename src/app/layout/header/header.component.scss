@@ -1,0 +1,369 @@
+@import 'variables';
+
+///// Website Navbar /////
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 90px;
+  align-items: center;
+  background-color: #272829;
+  transition: height 0.15s ease-out;
+  z-index: 998;
+
+  .container-header {
+    display: flex;
+    align-items: center;
+    width: 78vw;
+    padding: 0 !important;
+    margin: auto;
+  }
+
+  ///// Website Brand /////
+  &__brand {
+    cursor: pointer !important;
+    font-size: 36px;
+    font-family: cursive !important;
+    color: $orangeColor;
+  }
+
+  ///// Website Routing /////
+  &__routing {
+    display: flex;
+    margin-left: auto !important;
+    margin-left: 50px;
+    z-index: 999;
+
+    .nav-item {
+      margin-left: 75px;
+      background-color: transparent;
+      border: none;
+      color: #fc0;
+      font-size: 14px;
+      font-weight: 400;
+      transition: color 0.3s ease-out;
+
+      &::after {
+        padding: 2px 0px;
+        content: '';
+        display: block;
+        border-bottom: 2px solid $orangeColor;
+        width: 0;
+        -webkit-transition: 0.3s ease;
+        transition: 0.3s ease;
+      }
+
+      &:hover {
+        color: $orangeColor;
+      }
+
+      &:hover::after {
+        width: 100%;
+      }
+
+      &.active {
+        color: $orangeColor;
+      }
+
+      &.active::after {
+        width: 100%;
+      }
+    }
+  }
+
+  ///// Website Auth /////
+  .dropdown-toggle::after {
+    display:none;
+  }
+
+  &__auth {
+    margin-left: auto !important;
+    display: flex;
+
+    .login {
+      background-color: $orangeColorDarker;
+      color: #fff;
+      border: 1px solid $orangeColorDarker;
+      padding: 6px 25px;
+      font-size: 18px;
+      transition: 0.25s ease-in-out;
+
+      &:hover {
+        background-color: $orangeColor;
+      }
+    }
+
+    .organization {
+      background-color: transparent;
+      color: $orangeColor;
+      border: none;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-left: 20px;
+    }
+
+    .mobile-login-register {
+      display: none;
+
+      .add-user {
+        padding-top: 4px;
+
+        button {
+          border: none;
+          background-color: transparent;
+
+          img {
+            width: 28px;
+          }
+        }
+      }
+    }
+
+    .notification {
+      position: relative;
+      cursor: pointer;
+      margin: auto;
+      margin-right: 30px;
+      padding: 8px 6px 0 0;
+
+      img {
+        width: 28px;
+      }
+
+      .ding-dong {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        span {
+          color: #fff;
+          background-color: $bootstrapDanger;
+          padding: 2px 6px;
+          border-radius: 25px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .nav-login {
+      background-color: transparent;
+      color: $orangeColor;
+      border: none;
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+
+    .nav-user {
+      cursor: pointer;
+      width: 35px;
+      padding-top: 4px;
+
+      button {
+        border: none;
+        background-color: transparent;
+        width: 35px;
+        height: 35px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 50%;
+
+        img {
+          pointer-events: none;
+          display: inline;
+          margin: 0 auto;
+          height: 100%;
+          width: auto;
+        }
+      }
+    }
+  }
+}
+
+///// Hamburger Menu /////
+.hamburger {
+  display: none;
+  padding-top: 4px;
+
+  .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    background-color: $orangeColor;
+  }
+}
+
+.navbar-scrolled {
+  height: 70px;
+  background-color: #272829de;
+  box-shadow: 0 1px 20px 0 rgba(171, 179, 194, 0.4);
+  transition: height 0.25s ease-in;
+}
+
+::ng-deep .dropdown-menu {
+  border: none;
+  box-shadow: 2px 2px 5px 0px rgb(0 0 0 / 32%);
+  margin-top: 15px;
+
+  .dropdown-item:active {
+    color: $blackColor;
+    background-color: #e9ecef;
+  }
+}
+
+///// Responsive /////
+@media only screen and (max-width: 1810px) {
+  .nav {
+
+    &__brand {
+      font-size: 32px;
+    }
+  }
+
+  .nav-item {
+    font-size: 12px !important;
+    margin-left: 60px !important;
+  }
+}
+
+@media only screen and (max-width: 1600px) {
+
+  .nav {
+
+    .container-header {
+      width: 88vw !important;
+    }
+
+    &__brand {
+      font-size: 28px;
+    }
+  }
+
+  .nav-item {
+    margin-left: 50px !important;
+  }
+}
+
+@media only screen and (max-width: 1536px) {
+  .nav {
+    .container-header {
+      width: 90vw !important;
+    }
+  }
+}
+
+@media only screen and (max-width: 1440px) {
+  .nav {
+
+    .container-header {
+      width: 92vw !important;
+    }
+
+    &__brand {
+      font-size: 26px;
+    }
+  }
+}
+
+@media only screen and (max-width: 1366px) {
+  .nav {
+
+    .container-header {
+      width: 94vw !important;
+    }
+
+    &__brand {
+      font-size: 24px;
+    }
+  }
+}
+
+@media only screen and (max-width: 1280px) {
+  .container-header {
+    width: 96vw !important;
+  }
+}
+
+@media only screen and (max-width: 1280px) {
+  .nav__routing {
+    position: fixed;
+    left: -100%;
+    top: 5rem;
+    flex-direction: column;
+    background-color: rgb(46, 46, 46);
+    width: 100%;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+  }
+  .routing-scrolled {
+    margin-top: -20px;
+    background-color: rgba(46, 46, 46, 0.97) !important;
+  }
+  .nav__routing.active {
+    left: 0 !important;
+
+    .nav-item.active {
+      background-color: $greyColor;
+    }
+  }
+
+  .hamburger {
+    display: block;
+    cursor: pointer;
+  }
+
+  .hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .hamburger.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  .nav__auth {
+    margin-right: 10%;
+  }
+
+  .nav-item::after {
+    display: none !important;
+  }
+
+  .nav-item {
+    margin: 0 !important;
+    padding: 2rem 0 !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    letter-spacing: 1px;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .nav__auth {
+    .login {
+      font-size: 16px !important;
+      padding: 12px 36px !important;
+      margin-right: 30px;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .nav__auth {
+    .login, .organization {
+      display: none;
+    }
+  }
+
+  .mobile-login-register {
+    display: block !important;
+  }
+}

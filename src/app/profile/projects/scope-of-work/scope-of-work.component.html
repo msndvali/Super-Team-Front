@@ -1,0 +1,869 @@
+<ngx-spinner class="main-spinner" [name]="checkSpinner" bdColor = "rgba(249,249,249,1)" size = "large" color = "rgba(0,0,0,0.6)" type = "square-loader" [fullScreen] = "true"><p > Loading... </p></ngx-spinner>
+<div class="scopeofwork">
+  <div *ngIf="projectStatus == 3 && role == 'leader'" class="scopeofwork__back">
+    <img src="../../../../assets/img/fast-forward.png" alt="back-to-project">
+    <span (click)="goBackToProject(projectId)">Back to Project</span>
+  </div>
+  <div *ngIf="projectStatus == 3 && role == 'leader' || role == 'worker'" class="scopeofwork__back">
+    <img src="../../../../assets/img/fast-forward.png" alt="back-to-project">
+    <span (click)="goBackToMyProjects()">Back to My Projects</span>
+  </div>
+  <div *ngIf="role == 'customer'" class="scopeofwork__back">
+    <img src="../../../../assets/img/fast-forward.png" alt="back-to-project">
+    <span (click)="goBackToMyProjects()">Back to My Projects</span>
+  </div>
+  <div class="scopeofwork__project">
+    <div class="name">
+      #{{ project.projectNumber }}
+    </div>
+    <div class="scopeofwork__project__inline">
+      <div class="address">
+        Address: {{ project.address }}
+      </div>
+      <div class="total-area">
+        Total Area: {{ totalArea }} sqft
+      </div>
+    </div>
+  </div>
+  <div class="scopeofwork__top">
+    <div class="scopeofwork__top__inline">
+      <div class="scopeofwork__top__header">
+        Scope of Work
+      </div>
+      <div class="scopeofwork__top__buttons" *ngIf="role == 'customer'">
+        <button (click)="openQuoteModal(quote)">Quote</button>
+      </div>
+      <div class="scopeofwork__top__buttons" *ngIf="role == 'leader' || role == 'worker'">
+        <button (click)="openQuoteModal(totals)">Totals</button>
+      </div>
+      <div class="scopeofwork__top__buttons" *ngIf="role == 'customer'">
+        <button (click)="openFilesModal(files)">Files</button>
+      </div>
+      <div class="scopeofwork__top__buttons" *ngIf="role == 'customer'">
+        <button (click)="openFurnitureModal(furniture)">Furniture</button>
+      </div>
+      <div *ngIf="!isJunehomes" class="scopeofwork__top__export">
+        <button (click)="exportContractPDF()">
+          Export Project
+        </button>
+      </div>
+      <div *ngIf="isJunehomes" class="scopeofwork__top__export">
+        <button (click)="exportJunehomesPDF()">
+          Export Project
+        </button>
+      </div>
+    </div>
+    <div class="scopeofwork__top__download">
+      <a class="active" *ngIf="floorPlanUrl" href="https://superteam.blob.core.windows.net/floorplans/{{ floorPlanUrl }}" target="_blank" download>Download Floor Plan</a>
+      <a class="disabled" *ngIf="!floorPlanUrl">Download Floor Plan</a>
+    </div>
+  </div>
+
+  <div class="loading-spinner scope-of-work">
+    <ngx-spinner class="change-status" [name]="changeStatus" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+  </div>
+
+  <br>
+
+  <ng-template [ngIf]="role == 'customer'">
+    <div class="scopeofwork__card" *ngFor="let scopes of renderedScopesOfWork | keyvalue">
+      <ng-template [ngIf]="scopes.value.length > 0">
+        <br>
+        <br>
+        <div class="scopeofwork__content">
+          <ol>
+            <div *ngFor="let scope of scopes.value; let i = index">
+              <div class="scopeofwork__content__header">
+                <div class="title" *ngIf="i == 0">
+                  <div>
+                    Status
+                  </div>
+                  <div>
+                    Description
+                  </div>
+                  <div>
+                    Category
+                  </div>
+                  <div>
+                    Cost
+                  </div>
+                  <div>
+                    Material Price
+                  </div>
+                  <div>
+                    Action
+                  </div>
+                </div>
+              </div>
+              <div class="room-type" *ngIf="scope.isAssignedToProject == true">
+                <div class="scopeofwork__content__name" *ngIf="i == 0">
+                  {{ roomTypes[scope.roomTypeId] }} - {{ scope.alphabet }}
+                </div>
+                <li class="selected-list">
+                  <div class="table-inline">
+                    <div class="scopeofwork__content__status selected" *ngIf="scopes.value[i].isAssignedToProject">
+                      <span>Selected</span>
+                    </div>
+                    <div class="scopeofwork__content__main">
+                      <div class="scopeofwork__content__desc">
+                        {{ scope.description }}
+                      </div>
+                    </div>
+                    <div class="scopeofwork__content__category">
+                      {{ scope.categoryName }}
+                    </div>
+                    <div class="scopeofwork__content__hours">
+                      ${{ scope.laborCost | number : '1.0-0' }}
+                    </div>
+                    <div class="scopeofwork__content__price">
+                      ${{ scope.materialPrice | number: '1.0-0' }}
+                    </div>
+                    <div class="scopeofwork__content__checked">
+                      <button (click)="changeScopeStatus(scope.id, 'remove', scopes.key)">
+                        <img src="../../../../assets/img/minus.png" alt="minus-button">
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </div>
+          </ol>
+          <ol>
+            <div *ngFor="let scope of scopes.value; let i = index; let last = last;">
+              <div class="room-type" *ngIf="scope.isAssignedToProject == false">
+                <div class="scopeofwork__content__name" *ngIf="i == 0">
+                  {{ roomTypes[scope.roomTypeId] }} - {{ scope.alphabet }}
+                </div>
+                <li class="notselected-list">
+                  <div class="table-inline">
+                    <div class="scopeofwork__content__status notselected" *ngIf="!scopes.value[i].isAssignedToProject">
+                      <span>Not Selected</span>
+                    </div>
+                    <div class="scopeofwork__content__main">
+                      <div class="scopeofwork__content__desc">
+                        {{ scope.description }}
+                      </div>
+                    </div>
+                    <div class="scopeofwork__content__category">
+                      {{ scope.categoryName }}
+                    </div>
+                    <div class="scopeofwork__content__hours">
+                      ${{ scope.laborCost | number : '1.0-0' }}
+                    </div>
+                    <div class="scopeofwork__content__price">
+                      ${{ scope.materialPrice | number: '1.0-0' }}
+                    </div>
+                    <div class="scopeofwork__content__checked">
+                      <button (click)="changeScopeStatus(scope.id, 'add', scopes.key)">
+                        <img src="../../../../assets/img/add.png" alt="add-button">
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </div>
+          </ol>
+        </div>
+      </ng-template>
+    </div>
+    <div *ngIf="apartmentScopesOfWork.length > 0" class="scopeofwork__apartment">
+      <div class="scopeofwork__apartment__header">
+        Apartment
+      </div>
+      <div class="scopeofwork__apartment__head">
+        <div>Description</div>
+        <div>Category</div>
+        <div>Cost</div>
+        <div>Material Price</div>
+      </div>
+      <div *ngFor="let apartment of apartmentScopesOfWork" class="scopeofwork__apartment__body">
+        <div>{{ apartment.description }}</div>
+        <div>{{ apartment.categoryName }}</div>
+        <div>${{ apartment.laborCost | number : '1.0-0' }}</div>
+        <div>${{ apartment.materialPrice | number : '1.0-0' }}</div>
+      </div>
+    </div>
+    <div *ngIf="calculatedData" class="scopeofwork__totals">
+      <div class="scopeofwork__totals__head">
+        <div>Totals</div>
+        <div></div>
+        <div>Furniture</div>
+        <div>Cost</div>
+        <div>Material Price</div>
+        <div>Total</div>
+      </div>
+      <div class="scopeofwork__totals__body">
+        <div></div>
+        <div></div>
+        <div>${{ totalFurniturePrice }}</div>
+        <div>${{ totalLaborCost | number : '1.0-0' }}</div>
+        <div>${{ calculatedData.totalMaterialPrice | number : '1.0-0' }}</div>
+        <div>${{ calculatedData.totalPrice | number : '1.0-0' }}</div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="role == 'leader' || role == 'worker'">
+    <div class="scopeofwork__card leader" *ngFor="let scopes of selectedScopes | keyvalue">
+      <ng-template [ngIf]="scopes.value.length > 0">
+        <div *ngFor="let scope of scopes.value; let first=first;">
+          <br *ngIf="first && scope.isAssignedToProject == true">
+          <br *ngIf="first && scope.isAssignedToProject == true">
+        </div>
+        <div class="scopeofwork__content">
+          <ol class="leader">
+            <div *ngFor="let scope of scopes.value; let i = index">
+              <div class="room-type" *ngIf="scope.isAssignedToProject == true">
+                <div class="scopeofwork__content__header leader">
+                  <div class="leader" *ngIf="i == 0">
+                    <div>
+                      Description
+                    </div>
+                    <div>
+                      Category
+                    </div>
+                    <div>
+                      Hours
+                    </div>
+                    <div>
+                      Material Price
+                    </div>
+                  </div>
+                </div>
+                <div class="scopeofwork__content__name" *ngIf="i == 0">
+                  {{ roomTypes[scope.roomTypeId] }} - {{ scope.alphabet }}
+                </div>
+                <li class="selected-list leader">
+                  <div class="table-inline leader">
+                    <div class="scopeofwork__content__main leader">
+                      <div class="scopeofwork__content__desc">
+                        {{ scope.description }}
+                      </div>
+                    </div>
+                    <div class="scopeofwork__content__category leader">
+                      {{ scope.categoryName }}
+                    </div>
+                    <div class="scopeofwork__content__hours leader">
+                      {{ scope.laborHours | number : '1.0-0' }}
+                    </div>
+                    <div class="scopeofwork__content__price leader">
+                      ${{ scope.materialPrice | number : '1.0-0' }}
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </div>
+          </ol>
+        </div>
+      </ng-template>
+    </div>
+    <div *ngIf="apartmentScopesOfWork.length > 0" class="scopeofwork__apartment">
+      <div class="scopeofwork__apartment__header">
+        Apartment
+      </div>
+      <div class="scopeofwork__apartment__head">
+        <div>Description</div>
+        <div>Category</div>
+        <div>Hours</div>
+        <div>Material Price</div>
+      </div>
+      <div *ngFor="let apartment of apartmentScopesOfWork" class="scopeofwork__apartment__body">
+        <div>{{ apartment.description }}</div>
+        <div>{{ apartment.categoryName }}</div>
+        <div>${{ apartment.laborHours | number : '1.0-0' }}</div>
+        <div>${{ apartment.materialPrice | number : '1.0-0' }}</div>
+      </div>
+    </div>
+    <div *ngIf="calculatedData" class="scopeofwork__totals">
+      <div class="scopeofwork__totals__head">
+        <div>Totals</div>
+        <div></div>
+        <div></div>
+        <div>Total Hours</div>
+        <div>Material Price</div>
+      </div>
+      <div class="scopeofwork__totals__body">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div>{{ totalLaborHours | number : '1.0-0' }}</div>
+        <div>${{ calculatedData.totalMaterialPrice | number : '1.0-0' }}</div>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="scopeofwork__submit">
+    <button type="submit" *ngIf="projectStatus == 1 && role == 'customer'" (click)="confirmProject()">Confirm</button>
+    <button type="submit" *ngIf="projectStatus == 2 && role == 'leader'" (click)="acceptProject()">Accept</button>
+  </div>
+</div>
+
+<!-- Quote -->
+<ng-template #quote let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Quote</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table *ngIf="calculatedData" class="quote__table">
+      <tr *ngFor="let prices of calculatedData.quoteRows">
+        <td class="quote__table__description">{{ prices.categoryName }}</td>
+        <td class="quote__table__price">${{ prices.price | number : '1.0-2' }}</td>
+      </tr>
+      <tr>
+        <td class="quote__table__description">Total Hours</td>
+        <td class="quote__table__price total">{{ calculatedData.totalHours | number : '1.0-0' }}</td>
+      </tr>
+      <tr>
+        <td class="quote__table__description">Total Material Price</td>
+        <td class="quote__table__price total">${{ calculatedData.totalMaterialPrice | number : '1.0-2' }}</td>
+      </tr>
+      <tr>
+        <td class="quote__table__description">Total</td>
+        <td class="quote__table__price total">${{ calculatedData.totalPrice | number : '1.0-2' }}</td>
+      </tr>
+      <tr>
+        <td class="quote__table__description">Total + tax</td>
+        <td class="quote__table__price totaltax">${{ calculatedData.totalAndTaxPrice | number : '1.0-2' }}</td>
+      </tr>
+    </table>
+  </div>
+</ng-template>
+
+<!-- Files -->
+<ng-template #files let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Files</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="uploads">
+      <table class="uploads__table">
+        <ngx-spinner [name]="uploadSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+        <tr>
+          <th>Access Video</th>
+          <td>
+            <button class="download" *ngIf="uploadCategories.accessVideoUrl" (click)="openFile(uploadCategories.accessVideoUrl, 'access')"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Garbage Video</th>
+          <td>
+            <button class="download" *ngIf="uploadCategories.garbageVideoUrl" (click)="openFile(uploadCategories.garbageVideoUrl, 'garbage')"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Mailbox Photo</th>
+          <td>
+            <button class="download" *ngIf="uploadCategories.mailboxPhotoUrl" (click)="openFile(uploadCategories.mailboxPhotoUrl, 'mailbox')"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Router Photo</th>
+          <td>
+            <button class="download" *ngIf="uploadCategories.routerPhotoUrl" (click)="openFile(uploadCategories.routerPhotoUrl, 'router')"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Electric Switchbox Photo</th>
+          <td>
+            <button class="download" *ngIf="uploadCategories.electricSwitchboxPhotoUrl" (click)="openFile(uploadCategories.electricSwitchboxPhotoUrl, 'electric-switchbox')"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Additional File</th>
+          <td>
+            <label class="custom-file-upload">
+              <input type="file" (change)="additionalFileChanged($event, 'additional-file-1')"/>
+                {{ uploadCategories.additionalFile1Url ? 'Reupload' : 'Upload' }}
+            </label>
+          </td>
+          <td>
+            <button type="button" class="download" *ngIf="uploadCategories.additionalFile1Url" fileSaver [method]="'GET'" [url]="'https://superteam.blob.core.windows.net/documents/additional-file-1-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Additional File</th>
+          <td>
+            <label class="custom-file-upload">
+              <input type="file" (change)="additionalFileChanged($event, 'additional-file-2')"/>
+                {{ uploadCategories.additionalFile2Url ? 'Reupload' : 'Upload' }}
+            </label>
+          </td>
+          <td>
+            <button type="button" class="download" *ngIf="uploadCategories.additionalFile2Url" fileSaver [method]="'GET'" [url]="'https://superteam.blob.core.windows.net/documents/additional-file-2-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+        <tr>
+          <th>Additional File</th>
+          <td>
+            <label class="custom-file-upload">
+              <input type="file" (change)="additionalFileChanged($event, 'additional-file-3')"/>
+                {{ uploadCategories.additionalFile3Url ? 'Reupload' : 'Upload' }}
+            </label>
+          </td>
+          <td>
+            <button type="button" class="download" *ngIf="uploadCategories.additionalFile3Url" fileSaver [method]="'GET'" [url]="'https://superteam.blob.core.windows.net/documents/additional-file-3-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Totals -->
+<ng-template #totals let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Totals</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table *ngIf="calculatedData" class="quote__table">
+      <tr>
+        <td class="quote__table__description">Total Hours</td>
+        <td class="quote__table__price total">{{ calculatedData.totalHours | number : '1.0-0' }}</td>
+      </tr>
+      <tr>
+        <td class="quote__table__description">Total Material Price</td>
+        <td class="quote__table__price total">${{ calculatedData.totalMaterialPrice | number: '1.0-2' }}</td>
+      </tr>
+    </table>
+  </div>
+</ng-template>
+
+<!-- Furniture -->
+<ng-template #furniture let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Furniture Selection</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="furniture-total">
+      <div>Total - <span class="price">${{ furnitureTotal }}</span></div>
+    </div>
+    <div class="furniture" *ngFor="let furniture of furnitures | keyvalue">
+      <ngx-spinner class="furniture-status" [name]="furnitureStatus" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+      <ng-container *ngFor="let fur of furniture.value; let i = index">
+        <div class="room-type" *ngIf="i == 0">
+          {{ roomTypes[fur.roomTypeId] }}
+        </div>
+        <div class="content head" *ngIf="i == 0">
+          <div>Description</div>
+          <div>Unit Price</div>
+          <div>Qty</div>
+          <div>Total Price</div>
+          <div>Action</div>
+        </div>
+        <div class="content">
+          <div>{{ fur.description }}</div>
+          <div>${{ fur.unitPrice }}</div>
+          <div>{{ fur.quantity }}</div>
+          <div>${{ fur.unitPrice * fur.quantity }}</div>
+          <div>
+            <input type="checkbox" *ngIf="!fur.isAssignedToProject" [checked]="fur.isAssignedToProject" (change)="changeFurnitureStatus(fur.id, 'add', furniture.key)" />
+            <input type="checkbox" *ngIf="fur.isAssignedToProject" [checked]="fur.isAssignedToProject" (change)="changeFurnitureStatus(fur.id, 'remove', furniture.key)" />
+          </div>
+        </div>
+      </ng-container>
+      <div class="subtotal" *ngFor="let total of roomTotals | keyvalue">
+        <ng-template [ngIf]="total.key == furniture.key">
+          <div>Total</div>
+          <div></div>
+          <div></div>
+          <div>${{ total.value }}</div>
+          <div></div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Export For PDF -->
+<div class="contract" id="contractPDF" #contractPDF>
+  <div class="header" style="text-align: center; margin-bottom: 20px;">
+    <span style="font-weight: bold; font-size: 24px; border-bottom: 4px solid black;">Home Improvement Contract</span>
+  </div>
+  <div class="content" style="font-size: 18px;">
+    This Contract represents a binding legal agreement between the Homeowner and Contract listed below upon date of signature by both parties.
+  </div>
+  <div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Homeowner</span>
+    </div>
+    <div>
+      <div class="listItem" style="font-size: 16px;">Name: {{ name }}</div>
+      <div class="listItem" style="font-size: 16px;">Street Address</div>
+      <div class="listItem" style="font-size: 16px;">City State Zip: {{ postalCode }}</div>
+      <div class="listItem" style="font-size: 16px;">Email: {{ email }}</div>
+      <div class="listItem" style="font-size: 16px;">Phone</div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Contractor</span>
+    </div>
+    <div *ngIf="assignedOrganization">
+      <div class="listItem" style="font-size: 16px;">Name: {{ assignedOrganization.title }}</div>
+      <div class="listItem" style="font-size: 16px;">Street Address: {{ assignedOrganization.address }}</div>
+      <div class="listItem" style="font-size: 16px;">City State Zip: {{ assignedOrganization.zipCode }}</div>
+      <div class="listItem" style="font-size: 16px;">Email: {{ assignedOrganization.email }}</div>
+      <div class="listItem" style="font-size: 16px;">Phone: {{ assignedOrganization.phoneNumber }}</div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Location of Home Improvement</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        {{ project.address }}
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Scope of Work (including the materials to be used)</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        <table data-pdfmake="{'widths':[95, 95, 95, 95, 95]}">
+          <tr>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Hours</th>
+            <th>Cost</th>
+            <th>Material Price</th>
+          </tr>
+          <tr *ngFor="let scope of selectedPDF">
+            <td>{{ scope.description }}</td>
+            <td>{{ scope.categoryName }}</td>
+            <td>{{ scope.laborHours }}</td>
+            <td>{{ scope.laborCost }}</td>
+            <td>{{ scope.materialPrice }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Totals</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        <table data-pdfmake="{'widths':[95, 95, 95, 95, 95]}">
+          <tr>
+            <th>Furniture</th>
+            <th>Cost</th>
+            <th>Material Price</th>
+            <th>Total</th>
+          </tr>
+          <tr>
+            <td>${{ totalFurniturePrice }}</td>
+            <td>${{ totalLaborCost | number : '1.0-0' }}</td>
+            <td>${{ calculatedData.totalMaterialPrice | number : '1.0-0' }}</td>
+            <td>${{ calculatedData.totalPrice | number : '1.0-0' }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Change Order</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Any additional work or modifications to the work listed in the Scope of Work shall require a change order. A change order is a written document listing the materials and labor required for services not listed in the original home improvement contract. The change order must be signed by the Homeowner and the Contractor prior to implementation of any changes.
+        This contract is based on the observations made during the Contractor’s initial walk though of the property. While Contractor makes every effort to accurately estimate the price of the project, there may be unforeseen conditions that can lead to unexpected costs. Homeowner agrees to be fully responsible for any increase in cost that are discovered by the Contract during the project.  In this instance, Contractor will issue a change order for Homeowner’s approval. No further work will be performed until Homeowner and Contractor agree on a reasonable means of addressing these unforeseen issues.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Insurance</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Homeowner agrees to maintain adequate coverage for the property where the home improvement project is being performed. Homeowner agrees to provide a copy of the certificate of insurance for the property in question to the Contractor prior to the project’s commencement. If the project is destroyed or damaged by any accident, disaster, or calamity such as fire, storm, flood, theft or vandalism, the Homeowner is still  responsible for any work that was completed by Contractor and is responsible for any extra work that results because of said damage or destruction.
+        Contractor shall carry worker’s compensation insurance to protect Contractor’s employees during the project.  Contractor will provide Homeowner with a copy of the certificate of worker’s compensation insurance.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Licensing and Registration</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Contractor warrants that they possess all valid licenses and registrations required by the state for the work to be performed by Contractor in this project.
+        Any and all subcontractors who are hired by Contractor for this project shall be properly licensed and registered according to state and local regulations for the work to be performed by the subcontractor on this project.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Permits</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Contractor agrees to assist Homeowner in procuring any required permits in accordance with local laws. The costs of any such permits shall be the obligation of the Homeowner.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Timing of Work</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        The parties agree that the work shall commence on or around _______________.
+        The parties agree that the work should be substantially completed by _______________________________________________.
+        However, the parties acknowledge that these dates are merely estimates and that there are no firm dates.   Homeowner agrees not to hold Contractor liable for any delays in the start date or completion date.
+        Any delays in project completion that are beyond Contractor’s control shall terminate any obligation to complete with the project within the timeline stated above.  Such delays beyond Contractor’s control include, but are not limited to worker strike, Homeowner lock-out, building lock-out, force majeure, safety impediment, and non-payment by Homeowner.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Property Access</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Homeowner agrees to provide Contractor’s employees and subcontractors with reasonable access to the property where the home improvement work is being performed.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Payment</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Homeowner agrees to make payments pursuant to the following payment schedule:
+
+        <table data-pdfmake="{'widths':[250, 250],'heights': 40}">
+          <tr>
+            <td style="text-align: left; border: none;">
+              <b>Payment Date</b>
+            </td>
+            <td style="text-align: right; border: none;">
+              <b>Payment Amount Due </b>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: left; border: none;">
+              _____________________
+            </td>
+            <td style="text-align: right; border: none;">
+              _____________________
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: left; border: none;">
+              _____________________
+            </td>
+            <td style="text-align: right; border: none;">
+              _____________________
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: left; border: none;">
+              _____________________
+            </td>
+            <td style="text-align: right; border: none;">
+              _____________________
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: left; border: none;">
+              _____________________
+            </td>
+            <td style="text-align: right; border: none;">
+              _____________________
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: left; border: none;">
+              _____________________
+            </td>
+            <td style="text-align: right; border: none;">
+              _____________________
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Indemnification</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Homeowner agrees to indemnify, defend and hold Contractor harmless against any and all loss or damages caused by those agents who are not directly employed by Contractor.
+        Contractor will indemnify, defend and hold Homeowner harmless against any and all loss or damages caused by those agents who are employed by Contractor.
+        Contractor recommends that Homeowner hire a professional moving service for the removal and storage of its furniture and personal possessions that will be affected by the scope of the work to be performed. Should Homeowner elect to ignore such recommendation, Homeowner hereby agrees to indemnify and hold Contractor harmless for any damage to its furniture or other personal belongings caused by Contractor or its agents.  Homeowner forfeits any right to offset any monies owed Contractor for any and all damages to its furniture and personal property
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Non-interference with Business Relations</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Homeowner will not interfere with the business relationships of Contractor or any of its agents. The Parties agree that the any attempt by Homeowner to employ or render a benefit to Contractor’s agent outside the scope of the payment terms of this Contract shall be deemed tortious interference and a breach of this Contract.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Lead Paint Removal</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        The parties acknowledge that Contractor has provided Homeowner with the “Renovate Right” pamphlet produced by the Environmental Protection Agency. Homeowner will execute the acknowledgement form which is attached as Exhibit 1.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Capital Improvement</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        The parties acknowledge that the project constitutes a capital improvement upon the premises and as such will execute the Capital Improvement form attached as Exhibit 2.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Applicable Law</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        This Contract shall be governed by and construed in accordance with the laws of the State of New York.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Severability</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        If any provision of this Agreement shall be held invalid or unenforceable, the validity or enforceability of the other provisions shall not be affected and shall still be in full force and effect.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Notices</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        Any and all required notices required shall be in writing and shall be delivered by certified mail, return receipt requested with postage prepaid or by email to their email addresses written above on page 1 of this Contract.
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Entirety of the Agreement</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        The parties acknowledge and agree that this Contract represents all of the promises, terms and conditions agreed to by the Parties and that no other promises, terms and conditions, whether written or verbal, exist.
+      </div>
+    </div>
+    <table class="signature" data-pdfmake="{'widths':[250, 250]}">
+      <tr>
+        <td style="text-align: left; border: none;">
+          Homeowner:
+          <br>
+          <br>
+          Homeowner's  Signature:___________________
+        </td>
+        <td style="text-align: center; border: none;">
+          <br>
+          <br>
+          Date:_____________
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: left; border: none;">
+          Contractor:
+          <br>
+          <br>
+          Contractor's  Signature:___________________
+        </td>
+        <td style="text-align: center; border: none;">
+          <br>
+          <br>
+          Date:_____________
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- Junhomes PDF -->
+<div class="contract" id="junehomesPDF" #junehomesPDF>
+  <div class="header" style="text-align: center; margin-bottom: 20px;">
+    <span style="font-weight: bold; font-size: 24px; border-bottom: 4px solid black;">Home Improvement Contract</span>
+  </div>
+  <div class="content" style="font-size: 18px;">
+    This Contract represents a binding legal agreement between the Homeowner and Contract listed below upon date of signature by both parties.
+  </div>
+  <div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Location of Home Improvement</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        {{ project.address }}
+      </div>
+    </div>
+    <div class="header">
+      <span style="font-weight: bold; font-size: 18px; border-bottom: 3px solid black;">Scope of Work (including the materials to be used)</span>
+    </div>
+    <div class="content">
+      <div style="font-size: 18px;">
+        <table data-pdfmake="{'widths':[95, 95, 95, 95, 95]}">
+          <tr>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Hours</th>
+            <th>Cost</th>
+            <th>Material Price</th>
+          </tr>
+          <tr *ngFor="let scope of selectedPDF">
+            <td>{{ scope.description }}</td>
+            <td>{{ scope.categoryName }}</td>
+            <td>{{ scope.laborHours }}</td>
+            <td>{{ scope.laborCost }}</td>
+            <td>{{ scope.materialPrice }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <table class="signature" data-pdfmake="{'widths':[250, 250]}">
+      <tr>
+        <td style="text-align: left; border: none;">
+          Homeowner:
+          <br>
+          <br>
+          Homeowner's  Signature:___________________
+        </td>
+        <td style="text-align: center; border: none;">
+          <br>
+          <br>
+          Date:_____________
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: left; border: none;">
+          Contractor:
+          <br>
+          <br>
+          Contractor's  Signature:___________________
+        </td>
+        <td style="text-align: center; border: none;">
+          <br>
+          <br>
+          Date:_____________
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

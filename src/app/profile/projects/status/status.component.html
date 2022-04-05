@@ -1,0 +1,751 @@
+<ngx-spinner class="main-spinner" [name]="checkSpinner" bdColor = "rgba(249,249,249,1)" size = "large" color = "rgba(0,0,0,0.6)" type = "square-loader" [fullScreen] = "true"><p > Loading... </p></ngx-spinner>
+<div class="timesheet">
+  <div class="timesheet__info">
+    <div class="title">
+      <div class="timesheet__info__title">#{{ projectNumber }}</div>
+      <div class="timesheet__info__subtitle">{{ projectStatus }}</div>
+      <button class="timesheet__info__scope-of-work" (click)="redirectToScopeOfWork(projectId)">Scope Of Work</button>
+      <button class="timesheet__info__totals" (click)="openTotalsModal(totals)">Totals</button>
+    </div>
+    <div class="timesheet__info__complete">
+      <button
+        *ngIf="role == 'leader' && (uploadCategories.accessVideoUrl || uploadCategories.garbageVideoUrl || uploadCategories.mailboxPhotoUrl || uploadCategories.routerPhotoUrl || uploadCategories.electricSwitchboxPhotoUrl)"
+        (click)="completeProject()">Mark as complete</button>
+    </div>
+  </div>
+
+  <!-- popover -->
+  <ng-template #popTitle>Actions</ng-template>
+  <ng-template #popContent>
+    <div class="popover-content">
+      <button class="update" (click)="openWorkHoursModal(workHours, workHoursId)"><img src="../../../../assets/img/update&delete/edit.png" alt="edit"></button>
+      <button class="delete" (click)="deleteWorkHours(workHoursId)"><img src="../../../../assets/img/update&delete/delete.png" alt="delete"></button>
+    </div>
+  </ng-template>
+  <!-- popover -->
+
+  <div class="timesheet__action">
+    <div class="timesheet__action__header">
+      <span>Timesheet</span>
+    </div>
+    <div class="timesheet__action__buttons">
+      <button class="timesheet__action__buttons__detailed" routerLink="/profile/projects/{{projectId}}/timesheet">Detailed Timesheet</button>
+      <button class="timesheet__action__buttons__add" (click)="addWorkHours(hours)">Add Work Hours</button>
+      <button class="timesheet__action__buttons__add" *ngIf="role == 'leader'" (click)="addWorkHours(addUsers)">Assign Worker</button>
+    </div>
+  </div>
+  <table class="timesheet__table">
+    <ngx-spinner [name]="timesheetSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+    <tr class="timesheet__table__thead">
+      <th rowspan="2">Timesheet</th>
+      <th colspan="2">Total Hours</th>
+      <th colspan="2">{{ weekDays[0] | date:'MMM d' }}</th>
+      <th colspan="2">{{ weekDays[1] | date:'MMM d' }}</th>
+      <th colspan="2">{{ weekDays[2] | date:'MMM d' }}</th>
+      <th colspan="2">{{ weekDays[3] | date:'MMM d' }}</th>
+      <th colspan="2">{{ weekDays[4] | date:'MMM d' }}</th>
+      <th colspan="2">{{ weekDays[5] | date:'MMM d' }}</th>
+      <th colspan="2">{{ weekDays[6] | date:'MMM d' }}</th>
+    </tr>
+    <tr class="timesheet__table__category">
+      <th>Hands On</th>
+      <th>Delivery Hours</th>
+      <th>H</th>
+      <th>D</th>
+      <th>H</th>
+      <th>D</th>
+      <th>H</th>
+      <th>D</th>
+      <th>H</th>
+      <th>D</th>
+      <th>H</th>
+      <th>D</th>
+      <th>H</th>
+      <th>D</th>
+      <th>H</th>
+      <th>D</th>
+    </tr>
+    <tr *ngFor="let timesheet of timesheetsList" class="timesheet__table__body">
+      <th>{{ timesheet.workerName }}</th>
+      <th>
+        <span *ngIf="timesheet.handsOnTime > 0">
+          {{ timesheet.handsOnTime }}h
+        </span>
+      </th>
+      <th>
+        <span *ngIf="timesheet.deliveryTime > 0">
+          {{ timesheet.deliveryTime }}h
+        </span>
+      </th>
+      <!-- First -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[1] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[1] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[1] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[1] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[1] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[1] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[1] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[1] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <!-- Second -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[2] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[2] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[2] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[2] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[2] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[2] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[2] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[2] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <!-- Third -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[3] | slice:8:10) || timesheet.workerId != userId)}">
+        <!-- <span *ngIf="timesheet.workerId == userId">asd</span> -->
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[3] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[3] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[3] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[3] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[3] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[3] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[3] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <!-- Fourth -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[4] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[4] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[4] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[4] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[4] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[4] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[4] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[4] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <!-- Fifth -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[5] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[5] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[5] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[5] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[5] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[5] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[5] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[5] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <!-- Sixth -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[6] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[6] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[6] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[6] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[6] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[6] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[6] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[6] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <!-- Seventh -->
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[7] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[7] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'worker'" [ngClass]="{'disabled': (role == 'worker' && (currentISOStringDate | slice:8:10) != (weekDays[7] | slice:8:10) || timesheet.workerId != userId)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[7] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[7] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[7] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 1">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+      <th *ngIf="role == 'leader'" [ngClass]="{'disabled': (timesheet.workerId == userId) && (currentISOStringDate | slice:8:10) != (weekDays[7] | slice:8:10)}">
+        <span *ngFor="let time of timesheet.timeSheet">
+          <span *ngIf="(time.startTime | slice:8:10) == (weekDays[7] | slice:8:10) && time.hoursWorked > 0">
+            <span *ngIf="time.categoryId == 2">
+              <span class="edit-hours" (click)="passWorkHours(hours, time.id)" [ngbPopover]="popContent" [popoverTitle]="popTitle">
+                {{ time.hoursWorked }}h
+              </span>
+            </span>
+          </span>
+        </span>
+      </th>
+    </tr>
+    <tr class="total">
+      <th>Total</th>
+      <th>{{ totalHandsOnHours }} h</th>
+      <th>{{ totalDeliveryHours }} h</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+</div>
+
+<div class="expenses">
+  <div class="expenses__action">
+    <div class="expenses__action__header">
+      <span>Expenses</span>
+    </div>
+    <div class="expenses__action__buttons">
+      <button class="expenses__action__buttons__add" [disabled]="role != 'leader'" (click)="openAddExpensesModal(expenses)">Add Expenses</button>
+    </div>
+  </div>
+  <table class="expenses__table">
+    <ngx-spinner [name]="expensesSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+    <tr class="expenses__table__thead">
+      <th>Cost</th>
+      <th>Category</th>
+      <th>Date</th>
+      <th>Receipt holder</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let expense of expensesList">
+      <th>${{ expense.cost }}</th>
+      <th>
+        <div *ngFor="let type of expenseTypes">
+          <span *ngIf="expense.expenseTypeId == type.id">
+            {{ type.title }}
+          </span>
+        </div>
+      </th>
+      <th>{{ expense.date | date:'mediumDate' }}</th>
+      <th>{{ expense.receiptHolderName }}</th>
+      <th class="update-delete">
+        <button [disabled]="role != 'leader'" (click)="openUpdateExpensesModal(expenses, expense.id)"><img src="../../../../assets/img/update&delete/edit.png" alt="update"></button>
+        <button [disabled]="role != 'leader'" (click)="deleteExpenses(expense.id)"><img src="../../../../assets/img/update&delete/delete.png" alt="delete"></button>
+      </th>
+    </tr>
+    <tr class="total">
+      <th>Total</th>
+      <th>${{ expensesTotal }}</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+</div>
+
+<div class="uploads">
+  <hr class="uploads-hr">
+  <table class="uploads__table">
+    <ngx-spinner [name]="uploadSpinner" bdColor = "rgba(249, 249, 249, 0.8)" size = "medium" color = "#ebc858s" type = "ball-pulse-sync" [fullScreen] = "false"></ngx-spinner>
+    <tr>
+      <th>Access Video</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" accept="video/mp4,video/x-m4v,video/*" (change)="onFileChanged($event, 'access-video', 'video')"/>
+          {{ uploadCategories.accessVideoUrl ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.accessVideoUrl" fileSaver [method]="'GET'" [fileName]="'access-video-' + projectId + '.mp4'" [url]="'https://superteam.blob.core.windows.net/videos/access-video-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Garbage Video</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" accept="video/mp4,video/x-m4v,video/*" (change)="onFileChanged($event, 'garbage-video', 'video')"/>
+            {{ uploadCategories.garbageVideoUrl ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.garbageVideoUrl" fileSaver [method]="'GET'" [fileName]="'garbage-video-' + projectId + '.mp4'" [url]="'https://superteam.blob.core.windows.net/videos/garbage-video-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Mailbox Photo</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" accept="image/*" (change)="onFileChanged($event, 'mailbox-photo', 'image')"/>
+            {{ uploadCategories.mailboxPhotoUrl ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.mailboxPhotoUrl" fileSaver [method]="'GET'" [fileName]="'mailbox-photo-' + projectId + '.jpg'" [url]="'https://superteam.blob.core.windows.net/videos/mailbox-photo-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Router Photo</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" accept="image/*" (change)="onFileChanged($event, 'router-photo', 'image')"/>
+            {{ uploadCategories.routerPhotoUrl ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.routerPhotoUrl" fileSaver [method]="'GET'" [fileName]="'router-photo-' + projectId + '.jpg'" [url]="'https://superteam.blob.core.windows.net/videos/router-photo-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Electric Switchbox Photo</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" accept="image/*" (change)="onFileChanged($event, 'electric-switchbox-photo', 'image')"/>
+            {{ uploadCategories.electricSwitchboxPhotoUrl ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.electricSwitchboxPhotoUrl" fileSaver [method]="'GET'" [fileName]="'electric-switchbox-photo-' + projectId + '.jpg'" [url]="'https://superteam.blob.core.windows.net/videos/electric-switchbox-photo-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Additional File</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" (change)="additionalFileChanged($event, 'additional-file-1')"/>
+            {{ uploadCategories.additionalFile1Url ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.additionalFile1Url" fileSaver [method]="'GET'" [url]="'https://superteam.blob.core.windows.net/documents/additional-file-1-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Additional File</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" (change)="additionalFileChanged($event, 'additional-file-2')"/>
+            {{ uploadCategories.additionalFile2Url ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.additionalFile2Url" fileSaver [method]="'GET'" [url]="'https://superteam.blob.core.windows.net/documents/additional-file-2-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+    <tr>
+      <th>Additional File</th>
+      <td>
+        <label class="custom-file-upload">
+          <input type="file" (change)="additionalFileChanged($event, 'additional-file-3')"/>
+            {{ uploadCategories.additionalFile3Url ? 'Reupload' : 'Upload' }}
+        </label>
+      </td>
+      <td>
+        <button type="button" class="download" *ngIf="uploadCategories.additionalFile3Url" fileSaver [method]="'GET'" [url]="'https://superteam.blob.core.windows.net/documents/additional-file-3-'+projectId"><img src="../../../../assets/img/download.png" alt="download"></button>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #addUsers let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{currentDate | date:'MMMM d'}}</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="addWorkHoursWorkersForm">
+      <div class="form-group">
+        <label class="modal__form__label">Workers</label>
+        <select formControlName="workerId" class="modal__form__input">
+          <option *ngFor="let user of assignedUsers" [value]="user.id">{{ user.givenName }} {{ user.surname }}</option>
+        </select>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="modal-cancel" (click)="modal.close('Close click')">Close</button>
+    <button type="button" class="modal-save" (click)="submitAddingWorkHoursUsers()">Save</button>
+  </div>
+</ng-template>
+
+<ng-template #hours let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{currentDate | date:'MMMM d'}}</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="workHoursForm">
+      <div class="form-group" *ngIf="workHoursUsers">
+        <label class="modal__form__label">Users</label>
+        <select formControlName="userId" class="modal__form__input" (change)="checkSelectedUser($event.target.value)">
+          <option *ngFor="let user of users" [value]="user.id">{{ user.givenName }} {{ user.surname }}</option>
+        </select>
+      </div>
+      <div class="form-group" *ngIf="workHoursCreate && !workHoursUsers">
+        <label class="modal__form__label">Users</label>
+        <select formControlName="userId" class="modal__form__input" (change)="checkSelectedUser($event.target.value)">
+          <option *ngFor="let user of users" [value]="user.id">{{ user.givenName }} {{ user.surname }}</option>
+        </select>
+      </div>
+      <div class="form-group" *ngIf="!workHoursCreate && !workHoursUsers">
+        <label class="modal__form__label">Users</label>
+        <select formControlName="userId" class="modal__form__input" [attr.disabled]="!workHoursCreate">
+          <option *ngFor="let user of users" [value]="user.id">{{ user.givenName }} {{ user.surname }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="modal__form__label">Category</label>
+        <select formControlName="categoryId" class="modal__form__input">
+          <option selected></option>
+          <option [value]="1">Hands on</option>
+          <option [value]="2">Delivery</option>
+        </select>
+      </div>
+      <div class="form-group" *ngIf="workHoursCreate">
+        <label class="modal__form__label">Date</label>
+        <input type="date" formControlName="date" class="modal__form__input">
+      </div>
+      <div class="form-group" *ngIf="!workHoursCreate">
+        <label class="modal__form__label">Date</label>
+        <input type="date" formControlName="date" class="modal__form__input" [attr.disabled]="workHoursCreate">
+      </div>
+      <div *ngIf="isCreatingStart" class="form-group">
+        <label class="modal__form__label">Start Time</label>
+        <input formControlName="start" class="modal__form__input" [ngxTimepicker]="startPickerCreate" [min]="workHoursStartCreate" (ngModelChange)="startTimeChanged()">
+        <ngx-material-timepicker #startPickerCreate></ngx-material-timepicker>
+      </div>
+      <div *ngIf="!isCreatingStart" class="form-group">
+        <label class="modal__form__label">Start Time</label>
+        <input formControlName="start" class="modal__form__input" [ngxTimepicker]="startPickerUpdate" [min]="workHoursStartUpdate" (ngModelChange)="startTimeChanged()">
+        <ngx-material-timepicker #startPickerUpdate></ngx-material-timepicker>
+      </div>
+      <div *ngIf="isCreatingEnd" class="form-group">
+        <label class="modal__form__label">End Time</label>
+        <input formControlName="end" class="modal__form__input" [ngxTimepicker]="endPickerCreate" [min]="workHoursEnd" (ngModelChange)="calculateHours()">
+        <ngx-material-timepicker #endPickerCreate></ngx-material-timepicker>
+      </div>
+      <div *ngIf="!isCreatingEnd" class="form-group">
+        <label class="modal__form__label">End Time</label>
+        <input formControlName="end" class="modal__form__input" [ngxTimepicker]="endPickerUpdate" [min]="workHoursEnd" (ngModelChange)="calculateHours()">
+        <ngx-material-timepicker #endPickerUpdate></ngx-material-timepicker>
+      </div>
+      <div class="form-group">
+        <label class="modal__form__label">Hours</label>
+        <input type="number" min="0" formControlName="hours" class="modal__form__input" [attr.disabled]="!workHoursCreate">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="modal-cancel" (click)="modal.close('Close click')">Close</button>
+    <button type="button" class="modal-save" *ngIf="workHoursCreateStatus" (click)="submitWorkHours()">Save</button>
+    <button type="button" class="modal-save" *ngIf="!workHoursCreateStatus" (click)="updateWorkHours()">Update</button>
+  </div>
+</ng-template>
+
+<ng-template #expenses let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Add Expenses</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="expensesForm">
+      <div class="modal__form">
+        <div class="form-inline">
+          <div class="form-group">
+            <label class="modal__form__label">Users</label>
+            <select formControlName="userId" class="modal__form__input">
+              <option *ngFor="let user of users" [value]="user.id">{{ user.givenName }} {{ user.surname }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="modal__form__label">Category</label>
+            <select type="text" formControlName="expenseTypeId" class="modal__form__input">
+              <option *ngFor="let type of expenseTypes" [value]="type.id">{{ type.title }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-inline">
+          <div class="form-group">
+            <label class="modal__form__label">Costs</label>
+            <input type="number" min="0" formControlName="cost" class="modal__form__input">
+          </div>
+          <div class="form-group">
+            <label class="modal__form__label">Date</label>
+            <input type="date" formControlName="date" class="modal__form__input">
+          </div>
+        </div>
+      </div>
+      <div class="upload">
+        <span class="text-danger" *ngIf="fileValidation">{{ fileValidation }}</span>
+        <file-upload formControlName="files" [multiple]="multiple" [animation]="animation">
+          <ng-template let-isFileDragDropAvailable="isFileDragDropAvailable" #placeholder>
+            <file-upload-drop-zone>
+                <ng-container>
+                  <span *ngIf="expenseCreate">
+                    <b>Upload Check</b> <br>
+                    Drag & Drop
+                  </span>
+                  <span *ngIf="!expenseCreate">
+                    <b>Reupload Check</b> <br>
+                    Drag & Drop
+                  </span>
+                </ng-container>
+            </file-upload-drop-zone>
+          </ng-template>
+        </file-upload>
+      </div>
+    </form>
+    <div class="download-check">
+      <a *ngIf="!expenseCreate" href="https://superteam.blob.core.windows.net/expenses/{{ currentExpense }}" target="_blank" download>Download Check</a>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="modal-cancel" (click)="modal.close('Close click')">Close</button>
+    <button type="button" class="modal-save" *ngIf="expenseCreate" (click)="addExpenses()">Save</button>
+    <button type="button" class="modal-save" *ngIf="!expenseCreate" (click)="updateExpenses()">Update</button>
+  </div>
+</ng-template>
+
+<ng-template #totals let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Totals</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <table *ngIf="calculatedData" class="quote__table">
+      <tr>
+        <td class="quote__table__description">Total Hours</td>
+        <td class="quote__table__price total">{{ calculatedData.totalHours | number : '1.0-0' }} hours</td>
+      </tr>
+      <tr>
+        <td class="quote__table__description">Total Material Price</td>
+        <td class="quote__table__price total">${{ calculatedData.totalMaterialPrice | number : '1.0-0' }}</td>
+      </tr>
+    </table>
+  </div>
+</ng-template>
+

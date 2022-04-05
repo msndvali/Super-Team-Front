@@ -1,0 +1,113 @@
+@use "sass:math";
+@import 'variables';
+
+@mixin input {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: $greyColor;
+  background-color: transparent;
+  border: 1px solid #c9c9c9;
+  padding: 12px 24px;
+  border-radius: 4px;
+  transition: 0.3s ease-in-out;
+
+  &::placeholder {
+    color: #b3b3b3;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  &:focus, &:active {
+    border-color: $orangeColor;
+    background-color: #fff;
+  }
+}
+
+@mixin black-button {
+  background-color: $blackColor;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 16px 40px;
+  transition: 0.25s ease-in-out;
+
+  &:hover {
+    background-color: $orangeColor;
+  }
+}
+
+@mixin black-button-smaller {
+  background-color: $blackColor;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  padding: 12px 30px;
+  transition: 0.25s ease-in-out;
+
+  &:hover {
+    background-color: $orangeColor;
+    color: $blackColor;
+  }
+}
+
+@mixin orange-button {
+  background-color: $orangeColor;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 16px 40px;
+  transition: 0.25s ease-in-out;
+
+  &:hover {
+    background-color: $orangeColorDarker;
+  }
+}
+
+@mixin orange-button-smaller {
+  background-color: $orangeColor;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  padding: 12px 30px;
+  transition: 0.25s ease-in-out;
+
+  &:hover {
+    background-color: $orangeColorDarker;
+  }
+}
+
+@mixin room-button {
+  background-color: $blackColor;
+  color: $orangeColor;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 12px 30px;
+  transition: 0.25s ease-in-out;
+
+  &:hover {
+    background-color: #3a3b3b;
+  }
+}
+
+@mixin grid($cols, $margin) {
+  float: left;
+  margin-right: $margin;
+  margin-bottom: $margin;
+  width: math.div(100% - $cols - 1 * $margin, $cols);
+
+  &:nth-child(#{$cols}n) {
+    margin-right: 0 !important;
+  }
+}

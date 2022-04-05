@@ -1,0 +1,54 @@
+@import '~pretty-checkbox/src/pretty-checkbox.scss';
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+/* You can add global styles to this file, and also import other style files */
+@font-face{
+  font-family: 'Roboto-Regular';
+  src: url('./assets/fonts/Roboto/Roboto-Regular.ttf');
+}
+
+* {
+  font-family: 'Roboto-Regular' !important;
+  margin: 0;
+  padding: 0;
+  outline: none !important;
+  box-sizing: border-box !important;
+  color: #0d0d0d;
+}
+
+body {
+  background-color: #f9f9f9f9;
+  overflow-x: hidden !important;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  background-color: transparent;
+  color: #0d0d0d !important;
+}
+
+input[type="time"]::-webkit-datetime-edit-text,
+input[type="time"]::-webkit-datetime-edit-month-field,
+input[type="time"]::-webkit-datetime-edit-day-field,
+input[type="time"]::-webkit-datetime-edit-year-field {
+  background-color: transparent;
+  color: #0d0d0d !important;
+}
+
+img {
+  user-select: none;
+}
+
+.ngb-toasts {
+  top: 9% !important;
+}
+.toast-body {
+  color: #fff;
+  letter-spacing: 1px;
+}

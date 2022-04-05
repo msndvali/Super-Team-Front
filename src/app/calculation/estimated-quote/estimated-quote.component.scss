@@ -1,0 +1,185 @@
+@import 'variables';
+@import 'mixins';
+@import 'calc-header-mixin';
+
+.header-img {
+  @include calc-header;
+}
+
+.estimated {
+  position: relative;
+  width: 50%;
+  margin: auto;
+
+  .estimated-top {
+    display: flex;
+  }
+
+  &__date {
+    width: 60%;
+    margin-top: 20px;
+
+    span {
+      background-color: transparent;
+      border: none;
+      pointer-events: none;
+      font-size: 16px;
+      font-weight: bold;
+      color: $blackColor;
+      padding: 13px;
+    }
+
+    &__input {
+      @include input;
+      width: 45%;
+      border-radius: 4px 0px 0px 4px;
+    }
+
+    .calendar {
+      border-radius: 0px 8px 8px 0;
+    }
+  }
+
+  &__length {
+    width: 40%;
+    margin-top: 33px;
+  }
+
+  &__table {
+    width: 100%;
+    margin-top: 5px;
+    box-shadow: 15px 15px 15px 0px #0000001f;
+
+    &__description {
+      width: 70%;
+    }
+
+    &__price {
+      width: 30%;
+      text-align: center;
+    }
+
+    tr:nth-child(odd) {
+      background: #F0F0F0;
+    }
+
+    tr td{
+      padding: 10px;
+      font-size: 18px;
+      text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #cfcfcf;
+
+      &.total {
+        background-color: #656565 !important;
+        color: #fff;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      &.tax {
+        background-color: #4a4a4a !important;
+        color: #fff;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      &.totaltax {
+        background-color: #656565 !important;
+        color: $bootstrapSuccess;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+    }
+  }
+
+  &__submit {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+
+    .date-required {
+      display: flex;
+      align-items: center;
+      color: $bootstrapDanger;
+      font-size: 16px;
+      margin-right: 30px;
+    }
+
+    button {
+      @include orange-button;
+    }
+  }
+}
+
+///// Responsive /////
+@media only screen and (max-width: 1610px) {
+  .header-img {
+
+    .text {
+      font-size: 34px;
+    }
+  }
+
+  .radio {
+
+    &__text {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@media only screen and (max-width: 1410px) {
+  .metadata__upload__header {
+    font-size: 14px !important;
+  }
+}
+
+@media only screen and (max-width: 1280px) {
+  .estimated {
+    width: 75% !important;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .estimated {
+    width: 100% !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .estimated {
+
+    &__date {
+
+      span {
+        font-size: 14px !important;
+      }
+
+      &__change {
+        font-size: 14px !important;
+      }
+    }
+
+    &__length {
+      font-size: 14px !important;
+    }
+
+    &__table {
+      tr td {
+        font-size: 16px !important;
+      }
+    }
+
+    &__submit {
+
+      .date-required {
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px !important;
+      }
+    }
+  }
+}
+

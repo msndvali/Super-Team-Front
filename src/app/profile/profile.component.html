@@ -1,0 +1,134 @@
+<div class="profile">
+  <div class="profile-flex">
+    <div class="profile__info">
+      <div class="profile__info__image">
+        <div class="profile-image">
+          <img src="https://superteam.blob.core.windows.net/images/{{this.userId}}" onError="this.src='../../assets/img/profile/man.png'" alt="main-profile-img">
+        </div>
+        <div class="choose">
+          <button (click)="openChooseImage(images)">
+            <img src="../../assets/img/profile/edit.png" alt="edit-profile-img">
+          </button>
+        </div>
+      </div>
+      <div *ngIf="loadInfo" class="profile__info__content">
+        <div class="inline-top">
+          <div>
+            <div class="name">
+              {{ name }}
+              <span *ngIf="role == 'leader'" class="leader-organization">
+                ({{ organizationName }})
+              </span>
+            </div>
+            <div class="email">
+              <div>
+                <img src="../../assets/img/profile/email.png" alt="profile-email">
+              </div>
+              <span>{{ email }}</span>
+            </div>
+          </div>
+          <div *ngIf="isVerified && role == 'leader'" class="verified">
+            <img src="../../assets/img/profile/verify.png" alt="verify" width="24">
+          </div>
+          <div *ngIf="role == 'leader'" class="unverified">
+            <button (click)="openVerificationUpload(verify)">Verify</button>
+          </div>
+        </div>
+        <div class="inline-bottom">
+          <div class="postal-code">
+            <div>
+              <img src="../../assets/img/profile/location.png" alt="profile-postal-code">
+            </div>
+            <span>{{ address }}</span>
+          </div>
+          <div class="role">
+            <div>
+              <img src="../../assets/img/profile/role.png" alt="profile-role">
+            </div>
+            <span>{{ role | titlecase }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="profile__routing">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<ng-template #images let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Choose Photo</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="url" class="image-cropper">
+      <img [src]="url" alt="profile-image" class="profile-pic">
+    </div>
+  </div>
+  <div class="modal-footer profile-footer">
+    <label class="custom-img-upload">
+      <input type="file" (change)="viewUploadedImage($event)" >
+      Choose Profile Photo
+    </label>
+    <div class="save-profile-img">
+      <button type="button" (click)="onFileChanged(uploadedProfile)">Upload</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #verify let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Upload Verification Files</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body check">
+    <div class="insurance">
+      <label class="custom-file-upload">
+        <input type="file" [disabled]="verifyUploads.isVerifiedFirst == 'sent'" (change)="verifyFileChanged($event, 'isVerifiedFirst', 'insuranceDocumentUrl', 'insurance')" >
+        <span *ngIf="verifyUploads.isVerifiedFirst == 'normal'">Subcontractor Agreement</span>
+        <ngx-spinner [name]="verifyFirstSpinner" bdColor = "rgba(0, 0, 0, 0)" size = "small" color = "#fff" type = "ball-clip-rotate" [fullScreen] = "false"></ngx-spinner>
+      </label>
+    </div>
+    <div class="worker-compensation">
+      <label class="custom-file-upload">
+        <input type="file" [disabled]="verifyUploads.isVerifiedSecond == 'sent'" (change)="verifyFileChanged($event, 'isVerifiedSecond', 'workerCompensationDocumentUrl', 'worker-compensation')" >
+        <span *ngIf="verifyUploads.isVerifiedSecond == 'normal'">Worker Compensation</span>
+        <div class="spinner">
+          <ngx-spinner [name]="verifySecondSpinner" bdColor = "rgba(0, 0, 0, 0)" size = "small" color = "#fff" type = "ball-clip-rotate" [fullScreen] = "false"></ngx-spinner>
+        </div>
+      </label>
+    </div>
+    <div class="general-liability">
+      <label class="custom-file-upload">
+        <input type="file" [disabled]="verifyUploads.isVerifiedThird == 'sent'" (change)="verifyFileChanged($event, 'isVerifiedThird', 'generalLiabilityDocumentUrl', 'general-liability')" >
+        <span *ngIf="verifyUploads.isVerifiedThird == 'normal'">General Liability</span>
+        <div class="spinner">
+          <ngx-spinner [name]="verifyThirdSpinner" bdColor = "rgba(0, 0, 0, 0)" size = "small" color = "#fff" type = "ball-clip-rotate" [fullScreen] = "false"></ngx-spinner>
+        </div>
+      </label>
+    </div>
+  </div>
+  <div class="modal-footer check">
+    <div class="check-footer">
+      <div class="check">
+        <img *ngIf="checkUploads.isVerifiedFirst" src="../../assets/img/check-mark.png" alt="check-1">
+      </div>
+      <div class="check">
+        <img *ngIf="checkUploads.isVerifiedSecond" src="../../assets/img/check-mark.png" alt="check-2">
+      </div>
+      <div class="check">
+        <img *ngIf="checkUploads.isVerifiedThird" src="../../assets/img/check-mark.png" alt="check-3">
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="verify-view">
+      <a class="pdf" href="https://superteam.blob.core.windows.net/root/subcontractor-agreement-general.pdf" target="_blank" download>Download Subcontractor Agreement</a>
+    </div>
+  </div>
+</ng-template>

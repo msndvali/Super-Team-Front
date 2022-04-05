@@ -1,0 +1,95 @@
+@import 'variables';
+
+.faq {
+  margin-top: 150px;
+
+  &__heading {
+    width: 100%;
+    text-align: center;
+
+    &__header {
+      font-size: 40px;
+      font-weight: 600;
+    }
+
+    &__info {
+      margin-top: 10px;
+      color: $greyColor;
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+  }
+
+  &__questions {
+    width: 50%;
+    margin: auto;
+    margin-top: 50px;
+  }
+}
+
+///// ngb-accordion style /////
+::ng-deep .card {
+  background-color: transparent;
+  margin-bottom: 20px;
+  border: none;
+
+  .card-header{
+    margin-bottom: 20px;
+    border: none;
+
+    button {
+      outline: none;
+      box-shadow: none;
+      text-decoration: none;
+      width: 100%;
+      text-align: left;
+      color: $orangeColor;
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+  }
+
+  .card-body {
+    font-size: 14px;
+    font-weight: 400;
+    color: $greyColor;
+    text-align: justify;
+  }
+
+  .show > .card-header {
+    background-color: $orangeColor;
+  }
+}
+
+///// Responsive /////
+@media only screen and (max-width: 1610px) {
+  .faq__heading__header {
+    font-size: 36px;
+  }
+
+  .faq__heading__info {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 1410px) {
+  .faq__heading__header {
+    font-size: 32px;
+  }
+
+  .faq__heading__info {
+    font-size: 12px !important;
+  }
+}
+
+@media only screen and (max-width: 1280px) {
+  .faq__questions {
+    width: 75%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .faq__questions {
+    width: 100%;
+  }
+}

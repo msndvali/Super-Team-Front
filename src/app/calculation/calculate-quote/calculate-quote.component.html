@@ -1,0 +1,324 @@
+<ngx-spinner [name]="loadingSpinner" bdColor = "rgba(249,249,249,1)" size = "large" color = "rgba(0,0,0,0.6)" type = "square-loader" [fullScreen] = "true"><p > Loading... </p></ngx-spinner>
+<div class="back" [class.active]="isActive" (click)="back()"></div>
+<div class="room" [class.open]="isActive">
+  <ngx-view360 [imageSrc]="img" alt="room" *ngIf="img"></ngx-view360>
+  <div class="text" *ngIf="conditionText">
+    <span *ngFor="let text of conditionText">
+      {{ text }}  <br>
+    </span>
+  </div>
+</div>
+<div class="calculate">
+  <div class="calculate__rooms" *ngIf="isActive" >
+    <div class="rel"
+      [class.display]="isDisplay"
+      [class.active]="isFirst == room.id"
+      *ngFor="let room of rooms; let i = index">
+        <div class="first-condition" *ngIf="isFirst" [@inOutAnimation]>
+          <div class="name">{{ room.name }}</div>
+          <div class="delete">
+            <button (click)="deleteRoom(room.id)">Delete</button>
+          </div>
+          <div *ngIf="!isJunehomes" class="condition-stars">
+            <ngb-rating [max]="5" [(rate)]="room.condition" [readonly]="false" (rateChange)="first($event)"></ngb-rating>
+          </div>
+          <div *ngIf="isJunehomes" class="condition-junehomes">
+            <button [class.active]="room.condition == 2" (click)="junehomesChanged(2, room)">3</button>
+            <button [class.active]="room.condition == 3" (click)="junehomesChanged(3, room)">2</button>
+            <button [class.active]="room.condition == 4" (click)="junehomesChanged(4, room)">1</button>
+            <button [class.active]="room.condition == 5" (click)="junehomesChanged(5, room)">0</button>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="objects">
+    <div class="navigate-back">
+      <div (click)="navigateToHome()" class="backBtn">
+        <span class="line tLine"></span>
+        <span class="line mLine"></span>
+        <span class="label">Home Page</span>
+        <span class="line bLine"></span>
+      </div>
+    </div>
+    <div class="addroom">
+      <div class="addroom__header">Add Rooms</div>
+      <div class="addroom__content">
+        <button class="addroom__content__button" (click)="newRoom('bedroom')">Bedroom</button>
+        <button class="addroom__content__button" (click)="newRoom('kitchen')">Kitchen</button>
+        <button class="addroom__content__button" (click)="newRoom('livingroom')">Living room</button>
+        <button class="addroom__content__button" (click)="newRoom('bathroom')">Bathroom</button>
+      </div>
+    </div>
+    <div class="canvas" [ngStyle]="{'display': isActive ? 'none' : 'block' }" #canvas></div>
+    <ngx-spinner [name]="deleteSpinner" bdColor = "rgba(249,249,249,1)" size = "large" color = "rgba(0,0,0,0.6)" type = "square-loader" [fullScreen] = "false"><p > Loading... </p></ngx-spinner>
+  </div>
+  <!--------- START --------->
+  <!--------- MENU --------->
+  <div class="calculate-hamburger" [class.active]="isHamburgerActive" (click)="hamburgerActive()">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="menu" *ngIf="!isActive" [@inOutAnimation] [class.active]="isHamburgerActive">
+    <div class="menu__content">
+      <div class="menu__selectedrooms">
+        <div class="menu__selectedrooms__header">Selected Rooms</div>
+        <div class="menu__selectedrooms__content">
+          <div class="group-header">Bedroom - {{ countBedroom }}x</div>
+          <div *ngFor="let room of rooms">
+            <div *ngIf="room.class == 'bedroom'">
+              <div class="selected-room">
+                <div class="name">
+                  {{ room.name }}
+                  <span *ngIf="roomsNum.bedroom != 1 && !isJunehomes"> -  {{ room.num }}</span>
+                  <span *ngIf="roomsNum.bedroom != 1 && isJunehomes"> -  {{ junehomesAlphabet[room.num-1] }}</span>
+                </div>
+                <div class="stars" *ngIf="!isJunehomes">
+                  <ngb-rating [max]="5" [(rate)]="room.condition" [readonly]="false" (rateChange)="first($event)"></ngb-rating>
+                </div>
+                <div *ngIf="isJunehomes" class="condition-junehomes">
+                  <button [class.active]="room.condition == 2" (click)="junehomesChanged(2, room)">3</button>
+                  <button [class.active]="room.condition == 3" (click)="junehomesChanged(3, room)">2</button>
+                  <button [class.active]="room.condition == 4" (click)="junehomesChanged(4, room)">1</button>
+                  <button [class.active]="room.condition == 5" (click)="junehomesChanged(5, room)">0</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="group-header">Living Room - {{ countLivingRoom }}x</div>
+          <div *ngFor="let room of rooms">
+            <div *ngIf="room.class == 'livingroom'">
+              <div class="selected-room">
+                <div class="name">
+                  {{ room.name }}
+                  <span *ngIf="roomsNum.livingroom != 1 && !isJunehomes"> -  {{ room.num }}</span>
+                  <span *ngIf="roomsNum.livingroom != 1 && isJunehomes"> -  {{ junehomesAlphabet[room.num-1] }}</span>
+                </div>
+                <div class="stars" *ngIf="!isJunehomes">
+                  <ngb-rating [max]="5" [(rate)]="room.condition" [readonly]="false" (rateChange)="first($event)"></ngb-rating>
+                </div>
+                <div *ngIf="isJunehomes" class="condition-junehomes">
+                  <button [class.active]="room.condition == 2" (click)="junehomesChanged(2, room)">3</button>
+                  <button [class.active]="room.condition == 3" (click)="junehomesChanged(3, room)">2</button>
+                  <button [class.active]="room.condition == 4" (click)="junehomesChanged(4, room)">1</button>
+                  <button [class.active]="room.condition == 5" (click)="junehomesChanged(5, room)">0</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="group-header">Kitchen - {{ countKitchen }}x</div>
+          <div *ngFor="let room of rooms">
+            <div *ngIf="room.class == 'kitchen'">
+              <div class="selected-room">
+                <div class="name">
+                  {{ room.name }}
+                  <span *ngIf="roomsNum.kitchen != 1 && !isJunehomes"> -  {{ room.num }}</span>
+                  <span *ngIf="roomsNum.kitchen != 1 && isJunehomes"> -  {{ junehomesAlphabet[room.num-1] }}</span>
+                </div>
+                <div class="stars" *ngIf="!isJunehomes">
+                  <ngb-rating [max]="5" [(rate)]="room.condition" [readonly]="false" (rateChange)="first($event)"></ngb-rating>
+                </div>
+                <div *ngIf="isJunehomes" class="condition-junehomes">
+                  <button [class.active]="room.condition == 2" (click)="junehomesChanged(2, room)">3</button>
+                  <button [class.active]="room.condition == 3" (click)="junehomesChanged(3, room)">2</button>
+                  <button [class.active]="room.condition == 4" (click)="junehomesChanged(4, room)">1</button>
+                  <button [class.active]="room.condition == 5" (click)="junehomesChanged(5, room)">0</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="group-header">Bathroom - {{ countBathroom }}x</div>
+          <div *ngFor="let room of rooms">
+            <div *ngIf="room.class == 'bathroom'">
+              <div class="selected-room">
+                <div class="name">
+                  {{ room.name }}
+                  <span *ngIf="roomsNum.bathroom != 1 && !isJunehomes"> -  {{ room.num }}</span>
+                  <span *ngIf="roomsNum.bathroom != 1 && isJunehomes"> -  {{ junehomesAlphabet[room.num-1] }}</span>
+                </div>
+                <div class="stars" *ngIf="!isJunehomes">
+                  <ngb-rating [max]="5" [(rate)]="room.condition" [readonly]="false" (rateChange)="first($event)"></ngb-rating>
+                </div>
+                <div *ngIf="isJunehomes" class="condition-junehomes">
+                  <button [class.active]="room.condition == 2" (click)="junehomesChanged(2, room)">3</button>
+                  <button [class.active]="room.condition == 3" (click)="junehomesChanged(3, room)">2</button>
+                  <button [class.active]="room.condition == 4" (click)="junehomesChanged(4, room)">1</button>
+                  <button [class.active]="room.condition == 5" (click)="junehomesChanged(5, room)">0</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="menu__roomsize">
+        <form [formGroup]="calculateQuoteForm" autocomplete="disabled">
+          <div class="floor-plan">
+            <div class="header">Floor Plan</div>
+            <div class="form-grid">
+              <div class="menu__roomsize__area">
+                <label class="menu__roomsize__label">
+                  <span>Total apartment area</span>
+                </label>
+                <input type="number" min="0" formControlName="totalArea" class="menu__roomsize__input" autocomplete="disabled">
+              </div>
+              <div class="menu__roomsize__radios">
+                <div class="menu__roomsize__radios__label">
+                  Do you need furniture?
+                </div>
+                <div class="pretty p-switch p-fill">
+                  <input type="checkbox" formControlName="needsFurniture" autocomplete="disabled"/>
+                  <div class="state p-success">
+                      <label></label>
+                  </div>
+                </div>
+              </div>
+              <div class="menu__roomsize__furniture">
+                <button (click)="openFurnitureModal(furniture)">Furniture</button>
+              </div>
+            </div>
+            <div class="menu__upload">
+              <div [class.disabled]="calculateQuoteForm.get('hasInteriorDesign')?.value == 'no' ? true : false" class="menu__upload__file">
+                <file-upload formControlName="files" [multiple]="multiple" [animation]="animation">
+                  <ng-template let-isFileDragDropAvailable="isFileDragDropAvailable" #placeholder>
+                    <file-upload-drop-zone>
+                        <ng-container>
+                          <span>Upload Floor Plan</span>
+                          <p>Click or Drag & Drop</p>
+                        </ng-container>
+                    </file-upload-drop-zone>
+                  </ng-template>
+                </file-upload>
+              </div>
+            </div>
+          </div>
+          <div class="menu__location">
+            <div class="header">Location</div>
+            <div class="menu__location__grid">
+              <div class="menu__location__state">
+                <label class="menu__location__label">Select state</label>
+                <ng-select
+                  [items]="states"
+                  bindLabel="name"
+                  bindValue="id"
+                  labelForId="states"
+                  [multiple]="false"
+                  clearAllText="Clear"
+                  (change)="selectState($event)"
+                  autocomplete="disabled">
+                </ng-select>
+              </div>
+              <div class="menu__location__city">
+                <label class="menu__location__label">Select city</label>
+                <ng-select
+                  [items]="cities"
+                  bindLabel="name"
+                  bindValue="id"
+                  labelForId="cities"
+                  [multiple]="false"
+                  clearAllText="Clear"
+                  formControlName="cityId"
+                  autocomplete="disabled">
+                </ng-select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="menu__roomsize__label">
+                <span>Address</span>
+              </label>
+              <input type="text" formControlName="address" class="menu__roomsize__input" autocomplete="disabled">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="menu__continue">
+        <div class="validations">
+          <div>
+            <span *ngIf="calculateQuoteForm.get('totalArea')?.touched && !calculateQuoteForm.get('totalArea')?.value" class="text-danger">Please input room size</span>
+          </div>
+          <div>
+            <span *ngIf="calculateQuoteForm.get('cityId')?.touched && !calculateQuoteForm.get('cityId')?.value" class="text-danger">Please choose city</span>
+          </div>
+        </div>
+        <div class="continue">
+          <button type="button" (click)="onSubmit()">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--------- END --------->
+  <!--------- MENU --------->
+</div>
+
+<!-- Furniture -->
+<ng-template #furniture let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Furniture</h4>
+    <button (click)="modal.close('Close click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="furniture" *ngIf="furniture">
+      <div class="room-type">Living Room</div>
+      <div class="content head">
+        <div>Description</div>
+        <div>Unit Price</div>
+        <div>Qty</div>
+        <div>Total Price</div>
+      </div>
+      <ng-container *ngFor="let fur of furnitures">
+        <div class="content" *ngIf="fur.roomTypeId == 1">
+          <div>{{ fur.description }}</div>
+          <div>${{ fur.unitPrice }}</div>
+          <div>{{ fur.quantity }}</div>
+          <div>${{ fur.unitPrice * fur.quantity }}</div>
+        </div>
+      </ng-container>
+      <div class="room-type">Bedroom</div>
+      <div class="content head">
+        <div>Description</div>
+        <div>Unit Price</div>
+        <div>Qty</div>
+        <div>Total Price</div>
+      </div>
+      <ng-container *ngFor="let fur of furnitures">
+        <div class="content" *ngIf="fur.roomTypeId == 2">
+          <div>{{ fur.description }}</div>
+          <div>${{ fur.unitPrice }}</div>
+          <div>{{ fur.quantity }}</div>
+          <div>${{ fur.unitPrice * fur.quantity }}</div>
+        </div>
+      </ng-container>
+      <div class="room-type">Bathroom</div>
+      <div class="content head">
+        <div>Description</div>
+        <div>Unit Price</div>
+        <div>Qty</div>
+        <div>Total Price</div>
+      </div>
+      <ng-container *ngFor="let fur of furnitures">
+        <div class="content" *ngIf="fur.roomTypeId == 3">
+          <div>{{ fur.description }}</div>
+          <div>${{ fur.unitPrice }}</div>
+          <div>{{ fur.quantity }}</div>
+          <div>${{ fur.unitPrice * fur.quantity }}</div>
+        </div>
+      </ng-container>
+      <div class="room-type">Kitchen</div>
+      <div class="content head">
+        <div>Description</div>
+        <div>Unit Price</div>
+        <div>Qty</div>
+        <div>Total Price</div>
+      </div>
+      <ng-container *ngFor="let fur of furnitures">
+        <div class="content" *ngIf="fur.roomTypeId == 4">
+          <div>{{ fur.description }}</div>
+          <div>${{ fur.unitPrice }}</div>
+          <div>{{ fur.quantity }}</div>
+          <div>${{ fur.unitPrice * fur.quantity }}</div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
